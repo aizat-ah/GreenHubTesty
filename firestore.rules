@@ -4,12 +4,13 @@ service cloud.firestore {
     function isLoggedIn() { return request.auth != null; }
     function getRole() { return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role; }
     function hasSupplierAccess() { return isLoggedIn() && (getRole() == 'supplier' || getRole() == 'admin'); }
+    function isAdminUser() { return isLoggedIn() && getRole() == 'admin'; }
 
     match /users/{userId} {
       allow read: if request.auth.uid == userId || hasSupplierAccess();
-      allow create: if request.auth.uid == userId;
-      allow update: if request.auth.uid == userId || hasSupplierAccess();
-      allow delete: if hasSupplierAccess();
+      allow create: if request.auth.uid == userId || isAdminUser();
+      allow update: if request.auth.uid == userId || isAdminUser();
+      allow delete: if isAdminUser();
     }
     match /products/{productId} {
       allow read: if isLoggedIn();

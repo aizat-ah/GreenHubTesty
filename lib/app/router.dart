@@ -13,7 +13,8 @@ import '../features/orders/checkout_screen.dart';
 import '../features/orders/order_success_screen.dart';
 import '../features/orders/my_orders_screen.dart';
 import '../features/admin/admin_dashboard.dart';
-import '../features/admin/admin_orders_screen.dart';
+import '../features/admin/admin_user_management.dart';
+import '../features/admin/admin_order_monitor.dart';
 import '../features/admin/manage_products_screen.dart';
 import '../features/supplier/supplier_dashboard.dart';
 import '../features/supplier/supplier_orders_screen.dart';
@@ -161,10 +162,17 @@ final routerProvider = Provider<GoRouter>((ref) {
         ),
       ),
       GoRoute(
+        path: '/admin/users',
+        pageBuilder: (context, state) => _buildSmoothPage(
+          state,
+          const AdminUserManagement(),
+        ),
+      ),
+      GoRoute(
         path: '/admin/orders',
         pageBuilder: (context, state) => _buildSmoothPage(
           state,
-          const AdminOrdersScreen(),
+          const AdminOrderMonitor(),
         ),
       ),
       GoRoute(

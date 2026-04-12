@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:greenhub/providers/product_provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -62,10 +61,12 @@ class _ProductFormSheetState extends ConsumerState<ProductFormSheet> {
     final p = widget.existingProduct;
     _nameCtrl = TextEditingController(text: p?.name ?? '');
     _descCtrl = TextEditingController(text: p?.description ?? '');
-    _priceCtrl =
-        TextEditingController(text: p != null ? p.price.toString() : '');
-    _stockCtrl =
-        TextEditingController(text: p != null ? p.stock.toString() : '');
+    _priceCtrl = TextEditingController(
+      text: p != null ? p.price.toString() : '',
+    );
+    _stockCtrl = TextEditingController(
+      text: p != null ? p.stock.toString() : '',
+    );
     _categoryCtrl = TextEditingController(text: p?.category ?? '');
     _selectedUnit = p?.unit ?? 'kg';
     _selectedCategory = (p != null && _kCategories.contains(p.category))
@@ -108,8 +109,8 @@ class _ProductFormSheetState extends ConsumerState<ProductFormSheet> {
         setState(() => _isUploadingImage = false);
       }
 
-      final category = _selectedCategory == 'Others' &&
-              _categoryCtrl.text.trim().isNotEmpty
+      final category =
+          _selectedCategory == 'Others' && _categoryCtrl.text.trim().isNotEmpty
           ? _categoryCtrl.text.trim()
           : _selectedCategory;
 
@@ -147,17 +148,19 @@ class _ProductFormSheetState extends ConsumerState<ProductFormSheet> {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(_isEditing
-                ? '${_nameCtrl.text} updated!'
-                : '${_nameCtrl.text} added!'),
+            content: Text(
+              _isEditing
+                  ? '${_nameCtrl.text} updated!'
+                  : '${_nameCtrl.text} added!',
+            ),
           ),
         );
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);
@@ -169,7 +172,7 @@ class _ProductFormSheetState extends ConsumerState<ProductFormSheet> {
     return Container(
       decoration: const BoxDecoration(
         color: AppTheme.surface,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -190,30 +193,23 @@ class _ProductFormSheetState extends ConsumerState<ProductFormSheet> {
 
           // Title bar
           Padding(
-            padding: const EdgeInsets.fromLTRB(24, 18, 24, 0),
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
             child: Row(
               children: [
                 Text(
                   _isEditing ? 'Edit Product' : 'Add New Product',
-                  style: GoogleFonts.poppins(
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
                     color: AppTheme.textDark,
                   ),
                 ),
                 const Spacer(),
-                GestureDetector(
-                  onTap: () => Navigator.pop(context),
-                  child: Container(
-                    width: 32,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      color: AppTheme.surfaceDim,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const Icon(Icons.close_rounded,
-                        size: 18, color: AppTheme.textMid),
-                  ),
+                IconButton(
+                  icon: const Icon(Icons.close_rounded),
+                  onPressed: () => Navigator.pop(context),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
                 ),
               ],
             ),
@@ -222,7 +218,7 @@ class _ProductFormSheetState extends ConsumerState<ProductFormSheet> {
           // Scrollable form
           Flexible(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -240,7 +236,7 @@ class _ProductFormSheetState extends ConsumerState<ProductFormSheet> {
                         _existingImageUrl = null;
                       }),
                     ),
-                    const SizedBox(height: 22),
+                    const SizedBox(height: 20),
 
                     // Name
                     _label('Product Name *'),
@@ -254,7 +250,7 @@ class _ProductFormSheetState extends ConsumerState<ProductFormSheet> {
                           ? 'Name is required'
                           : null,
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 14),
 
                     // Price + Unit row
                     Row(
@@ -270,14 +266,17 @@ class _ProductFormSheetState extends ConsumerState<ProductFormSheet> {
                                 controller: _priceCtrl,
                                 keyboardType:
                                     const TextInputType.numberWithOptions(
-                                        decimal: true),
+                                      decimal: true,
+                                    ),
                                 inputFormatters: [
                                   FilteringTextInputFormatter.allow(
-                                      RegExp(r'^\d*\.?\d{0,2}')),
+                                    RegExp(r'^\d*\.?\d{0,2}'),
+                                  ),
                                 ],
                                 decoration: const InputDecoration(
-                                    hintText: '0.00',
-                                    prefixText: 'RM '),
+                                  hintText: '0.00',
+                                  prefixText: 'RM ',
+                                ),
                                 validator: (v) {
                                   if (v == null || v.trim().isEmpty) {
                                     return 'Required';
@@ -299,13 +298,15 @@ class _ProductFormSheetState extends ConsumerState<ProductFormSheet> {
                             children: [
                               _label('Unit *'),
                               DropdownButtonFormField<String>(
-                                value: _selectedUnit,
+                                initialValue: _selectedUnit,
                                 decoration: const InputDecoration(),
                                 items: _kUnits
-                                    .map((u) => DropdownMenuItem(
-                                          value: u,
-                                          child: Text(u),
-                                        ))
+                                    .map(
+                                      (u) => DropdownMenuItem(
+                                        value: u,
+                                        child: Text(u),
+                                      ),
+                                    )
                                     .toList(),
                                 onChanged: (v) =>
                                     setState(() => _selectedUnit = v!),
@@ -315,21 +316,24 @@ class _ProductFormSheetState extends ConsumerState<ProductFormSheet> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 14),
 
                     // Stock
                     _label('Stock *'),
                     TextFormField(
                       controller: _stockCtrl,
                       keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true),
+                        decimal: true,
+                      ),
                       inputFormatters: [
                         FilteringTextInputFormatter.allow(
-                            RegExp(r'^\d*\.?\d{0,2}')),
+                          RegExp(r'^\d*\.?\d{0,2}'),
+                        ),
                       ],
                       decoration: InputDecoration(
-                          hintText: 'e.g. 50',
-                          suffixText: _selectedUnit),
+                        hintText: 'e.g. 50',
+                        suffixText: _selectedUnit,
+                      ),
                       validator: (v) {
                         if (v == null || v.trim().isEmpty) {
                           return 'Stock is required';
@@ -340,21 +344,19 @@ class _ProductFormSheetState extends ConsumerState<ProductFormSheet> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 14),
 
                     // Category
                     _label('Category *'),
                     DropdownButtonFormField<String>(
-                      value: _selectedCategory,
+                      initialValue: _selectedCategory,
                       decoration: const InputDecoration(),
                       items: _kCategories
-                          .map((c) => DropdownMenuItem(
-                                value: c,
-                                child: Text(c),
-                              ))
+                          .map(
+                            (c) => DropdownMenuItem(value: c, child: Text(c)),
+                          )
                           .toList(),
-                      onChanged: (v) =>
-                          setState(() => _selectedCategory = v!),
+                      onChanged: (v) => setState(() => _selectedCategory = v!),
                     ),
 
                     // Custom category if "Others"
@@ -375,7 +377,7 @@ class _ProductFormSheetState extends ConsumerState<ProductFormSheet> {
                         },
                       ),
                     ],
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 14),
 
                     // Description
                     _label('Description (Optional)'),
@@ -383,11 +385,13 @@ class _ProductFormSheetState extends ConsumerState<ProductFormSheet> {
                       controller: _descCtrl,
                       maxLines: 3,
                       maxLength: 300,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         hintText:
                             'e.g. Fresh local spinach, harvested daily from Cameron Highlands',
-                        counterStyle: GoogleFonts.inter(
-                            fontSize: 11, color: AppTheme.textLight),
+                        counterStyle: TextStyle(
+                          fontSize: 11,
+                          color: AppTheme.textLight,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -395,23 +399,29 @@ class _ProductFormSheetState extends ConsumerState<ProductFormSheet> {
                     // Available toggle
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 6),
+                        horizontal: 14,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
-                        color: AppTheme.surfaceDim,
-                        borderRadius: BorderRadius.circular(14),
+                        color: AppTheme.background,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: AppTheme.divider),
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.visibility_outlined,
-                              size: 18, color: AppTheme.textMid),
+                          const Icon(
+                            Icons.visibility_outlined,
+                            size: 18,
+                            color: AppTheme.textMid,
+                          ),
                           const SizedBox(width: 10),
-                          Expanded(
+                          const Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   'Available for sale',
-                                  style: GoogleFonts.poppins(
+                                  style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
                                     color: AppTheme.textDark,
@@ -419,17 +429,18 @@ class _ProductFormSheetState extends ConsumerState<ProductFormSheet> {
                                 ),
                                 Text(
                                   'Customers can see and order this product',
-                                  style: GoogleFonts.inter(
-                                      fontSize: 11,
-                                      color: AppTheme.textLight),
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color: AppTheme.textLight,
+                                  ),
                                 ),
                               ],
                             ),
                           ),
                           Switch(
                             value: _isAvailable,
-                            onChanged: (v) =>
-                                setState(() => _isAvailable = v),
+                            onChanged: (v) => setState(() => _isAvailable = v),
+                            activeThumbColor: AppTheme.primary,
                           ),
                         ],
                       ),
@@ -443,47 +454,30 @@ class _ProductFormSheetState extends ConsumerState<ProductFormSheet> {
 
           // Save button
           Padding(
-            padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
-            child: SizedBox(
-              width: double.infinity,
-              height: 54,
-              child: ElevatedButton(
-                onPressed: _isSaving ? null : _save,
-                style: ElevatedButton.styleFrom(
-                  disabledBackgroundColor: AppTheme.primary.withOpacity(0.6),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                ),
-                child: _isSaving
-                    ? Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                                color: Colors.white, strokeWidth: 2.5),
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
+            child: ElevatedButton(
+              onPressed: _isSaving ? null : _save,
+              child: _isSaving
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
                           ),
-                          const SizedBox(width: 10),
-                          Text(
-                            _isUploadingImage
-                                ? 'Uploading image...'
-                                : 'Saving...',
-                            style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      )
-                    : Text(
-                        _isEditing ? 'Save Changes' : 'Add Product',
-                        style: GoogleFonts.poppins(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
                         ),
-                      ),
-              ),
+                        const SizedBox(width: 10),
+                        Text(
+                          _isUploadingImage
+                              ? 'Uploading image...'
+                              : 'Saving...',
+                        ),
+                      ],
+                    )
+                  : Text(_isEditing ? 'Save Changes' : 'Add Product'),
             ),
           ),
         ],
@@ -493,10 +487,10 @@ class _ProductFormSheetState extends ConsumerState<ProductFormSheet> {
 
   Widget _label(String text) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: 6),
       child: Text(
         text,
-        style: GoogleFonts.inter(
+        style: const TextStyle(
           fontSize: 13,
           fontWeight: FontWeight.w600,
           color: AppTheme.textMid,
@@ -533,9 +527,9 @@ class _ImagePicker extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Product Image',
-          style: GoogleFonts.inter(
+          style: TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w600,
             color: AppTheme.textMid,
@@ -544,10 +538,11 @@ class _ImagePicker extends StatelessWidget {
         const SizedBox(height: 8),
 
         if (hasImage)
+          // Show image with remove button
           Stack(
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(12),
                 child: AspectRatio(
                   aspectRatio: 16 / 9,
                   child: pickedImage != null
@@ -555,7 +550,7 @@ class _ImagePicker extends StatelessWidget {
                       : CachedNetworkImage(
                           imageUrl: existingUrl!,
                           fit: BoxFit.cover,
-                          placeholder: (_, __) => Container(
+                          placeholder: (_, _) => Container(
                             color: const Color(0xFFEEF3EC),
                             child: const Center(
                               child: CircularProgressIndicator(),
@@ -575,14 +570,18 @@ class _ImagePicker extends StatelessWidget {
                       color: Colors.black.withOpacity(0.6),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.close_rounded,
-                        color: Colors.white, size: 16),
+                    child: const Icon(
+                      Icons.close_rounded,
+                      color: Colors.white,
+                      size: 16,
+                    ),
                   ),
                 ),
               ),
             ],
           )
         else
+          // Image picker buttons
           Row(
             children: [
               Expanded(
@@ -623,23 +622,20 @@ class _PickerButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: 84,
+        height: 80,
         decoration: BoxDecoration(
-          color: AppTheme.surfaceDim,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: AppTheme.divider,
-            style: BorderStyle.solid,
-          ),
+          color: const Color(0xFFF1F4EF),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppTheme.divider, style: BorderStyle.solid),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: AppTheme.primary, size: 26),
-            const SizedBox(height: 6),
+            Icon(icon, color: AppTheme.primary, size: 24),
+            const SizedBox(height: 4),
             Text(
               label,
-              style: GoogleFonts.inter(
+              style: const TextStyle(
                 fontSize: 12,
                 color: AppTheme.primary,
                 fontWeight: FontWeight.w600,
