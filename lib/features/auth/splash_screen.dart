@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../core/theme/app_theme.dart';
 import '../../providers/auth_provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -13,54 +12,50 @@ class SplashScreen extends ConsumerStatefulWidget {
 }
 
 class _SplashScreenState extends ConsumerState<SplashScreen>
-    with TickerProviderStateMixin {
-  late final AnimationController _logoController;
-  late final AnimationController _textController;
-  late final AnimationController _pulseController;
-
-  late final Animation<double> _logoScale;
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
   late final Animation<double> _logoOpacity;
-  late final Animation<double> _pulse;
+  late final Animation<double> _logoScale;
+  late final Animation<double> _loaderOpacity;
 
   @override
   void initState() {
     super.initState();
 
-    _logoController = AnimationController(
+    _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1500),
-    );
-    _pulseController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1200),
+      duration: const Duration(milliseconds: 1400),
     );
 
-    _logoScale = Tween<double>(begin: 0.3, end: 1.0).animate(
-      CurvedAnimation(parent: _logoController, curve: Curves.elasticOut),
-    );
     _logoOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
-        parent: _logoController,
-        curve: const Interval(0.0, 0.5, curve: Curves.easeOut),
+        parent: _controller,
+        curve: const Interval(0.14, 0.71, curve: Curves.easeOutCubic),
       ),
     );
-    _pulse = Tween<double>(begin: 0.8, end: 1.0).animate(
-      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
+
+    _logoScale = Tween<double>(begin: 0.85, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.14, 0.71, curve: Curves.easeOutCubic),
+      ),
     );
 
-    _startAnimation();
-  }
+    _loaderOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.64, 1.0, curve: Curves.easeOut),
+      ),
+    );
 
-  Future<void> _startAnimation() async {
-    await Future.delayed(const Duration(milliseconds: 200));
-    _logoController.forward();
-    _pulseController.repeat(reverse: true);
+    Future.delayed(const Duration(milliseconds: 200), () {
+      if (mounted) _controller.forward();
+    });
   }
 
   @override
   void dispose() {
-    _logoController.dispose();
-    _pulseController.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -71,68 +66,110 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
     return Scaffold(
       body: Container(
+        width: double.infinity,
+        height: double.infinity,
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
+          gradient: RadialGradient(
+            center: Alignment.center,
+            radius: 1.2,
             colors: [
-              Color(0xFF1B4332),
+              Color(0xFF3D8B6A),
               Color(0xFF2D6A4F),
-              Color(0xFF40916C),
+              Color(0xFF1A3F30),
             ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+            stops: [0.0, 0.5, 1.0],
           ),
         ),
         child: SafeArea(
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Spacer(flex: 3),
+          child: AnimatedBuilder(
+            animation: _controller,
+            builder: (context, _) {
+              return Stack(
+                children: [
+                  // Decorative circle — top right
+                  Positioned(
+                    top: -80,
+                    right: -100,
+                    child: Container(
+                      width: 400,
+                      height: 400,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white.withValues(alpha: 0.035),
+                      ),
+                    ),
+                  ),
+                  // Decorative circle — bottom left
+                  Positioned(
+                    bottom: -60,
+                    left: -80,
+                    child: Container(
+                      width: 250,
+                      height: 250,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white.withValues(alpha: 0.035),
+                      ),
+                    ),
+                  ),
 
-                // Animated Logo
-                AnimatedBuilder(
-                  animation: _logoController,
-                  builder: (context, child) {
-                    return Opacity(
-                      opacity: _logoOpacity.value,
-                      child: Transform.scale(
-                        scale: _logoScale.value,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4),
-                          child: SvgPicture.asset(
-                            'assets/logo/logo_horizontal_dark.svg',
-                            height: 44,
-                            fit: BoxFit.contain,
+                  // Main content column
+                  Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Logo — fade + scale
+                        Opacity(
+                          opacity: _logoOpacity.value,
+                          child: Transform.scale(
+                            scale: _logoScale.value,
+                            child: SvgPicture.asset(
+                              'assets/logo/logo_horizontal_dark.svg',
+                              height: 56,
+                              fit: BoxFit.contain,
+                              allowDrawingOutsideViewBox: true,
+                            ),
                           ),
                         ),
+                      ],
+                    ),
+                  ),
+
+                  // Bottom section — loader + version
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 24,
+                    child: Opacity(
+                      opacity: _loaderOpacity.value,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SizedBox(
+                            width: 48,
+                            child: LinearProgressIndicator(
+                              backgroundColor: Colors.white.withValues(alpha: 0.15),
+                              color: Colors.white.withValues(alpha: 0.6),
+                              minHeight: 2,
+                              borderRadius: BorderRadius.circular(1),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          Text(
+                            'v1.0.0',
+                            style: GoogleFonts.inter(
+                              fontSize: 11,
+                              color: Colors.white.withValues(alpha: 0.30),
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ],
                       ),
-                    );
-                  },
-                ),
-
-                const Spacer(flex: 3),
-
-                // Loading indicator
-                AnimatedBuilder(
-                  animation: _pulseController,
-                  builder: (context, child) {
-                    return Opacity(
-                      opacity: _pulse.value,
-                      child: SizedBox(
-                        width: 28,
-                        height: 28,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2.5,
-                          color: Colors.white.withOpacity(0.6),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-
-                const SizedBox(height: 48),
-              ],
-            ),
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
         ),
       ),
