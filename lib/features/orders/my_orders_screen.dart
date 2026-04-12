@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/order_model.dart';
 import '../../providers/order_provider.dart';
@@ -17,8 +18,15 @@ class MyOrdersScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppTheme.background,
+      extendBody: true,
       appBar: AppBar(
-        title: const Text('My Orders'),
+        title: Text(
+          'My Orders',
+          style: GoogleFonts.poppins(
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_rounded),
           onPressed: () => context.go('/home'),
@@ -27,25 +35,39 @@ class MyOrdersScreen extends ConsumerWidget {
       body: ordersAsync.when(
         data: (orders) {
           if (orders.isEmpty) {
-            return const Center(
+            return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.receipt_long_outlined,
-                      size: 64, color: AppTheme.primaryLight),
-                  SizedBox(height: 16),
+                  Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      color: AppTheme.surfaceDim,
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    child: Icon(
+                      Icons.receipt_long_outlined,
+                      size: 40,
+                      color: AppTheme.textLight.withOpacity(0.4),
+                    ),
+                  ),
+                  const SizedBox(height: 18),
                   Text(
                     'No orders yet',
-                    style: TextStyle(
+                    style: GoogleFonts.poppins(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
                       color: AppTheme.textDark,
                     ),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 6),
                   Text(
                     'Your order history will appear here',
-                    style: TextStyle(color: AppTheme.textMid),
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      color: AppTheme.textLight,
+                    ),
                   ),
                 ],
               ),
@@ -53,9 +75,9 @@ class MyOrdersScreen extends ConsumerWidget {
           }
 
           return ListView.separated(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 120),
             itemCount: orders.length,
-            separatorBuilder: (_, _) => const SizedBox(height: 12),
+            separatorBuilder: (_, __) => const SizedBox(height: 14),
             itemBuilder: (context, index) {
               return _OrderCard(order: orders[index]);
             },
@@ -64,7 +86,7 @@ class MyOrdersScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('Error: $e')),
       ),
-      bottomNavigationBar: BottomNavBar(currentRoute: '/orders'),
+      bottomNavigationBar: const BottomNavBar(currentRoute: '/orders'),
     );
   }
 }
@@ -79,35 +101,52 @@ class _OrderCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: AppTheme.surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppTheme.divider),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: AppTheme.cardShadow,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
+            padding: const EdgeInsets.fromLTRB(18, 16, 18, 12),
             child: Row(
               children: [
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: _statusColor(order.status).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(11),
+                  ),
+                  child: Center(
+                    child: Text(
+                      order.status.emoji,
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         'Order #${order.id.substring(0, 8).toUpperCase()}',
-                        style: const TextStyle(
-                          fontSize: 13,
+                        style: GoogleFonts.poppins(
+                          fontSize: 14,
                           fontWeight: FontWeight.w700,
                           color: AppTheme.textDark,
                         ),
                       ),
-                      const SizedBox(height: 2),
+                      const SizedBox(height: 1),
                       Text(
                         DateFormat('dd MMM yyyy, hh:mm a')
                             .format(order.createdAt),
-                        style: const TextStyle(
-                            fontSize: 11, color: AppTheme.textLight),
+                        style: GoogleFonts.inter(
+                          fontSize: 11,
+                          color: AppTheme.textLight,
+                        ),
                       ),
                     ],
                   ),
@@ -117,43 +156,66 @@ class _OrderCard extends StatelessWidget {
             ),
           ),
 
-          const Divider(height: 1),
+          Divider(color: AppTheme.divider.withOpacity(0.6), height: 1),
 
-          // Items preview
+          // Items
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
+            padding: const EdgeInsets.fromLTRB(18, 12, 18, 12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ...order.items.take(3).map((item) => Padding(
-                      padding: const EdgeInsets.only(bottom: 3),
-                      child: Text(
-                        '• ${item.productName} × ${item.quantity} ${item.unit}',
-                        style: const TextStyle(
-                            fontSize: 13, color: AppTheme.textMid),
+                      padding: const EdgeInsets.only(bottom: 4),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 4,
+                            height: 4,
+                            decoration: const BoxDecoration(
+                              color: AppTheme.textLight,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              '${item.productName} × ${item.quantity} ${item.unit}',
+                              style: GoogleFonts.inter(
+                                fontSize: 13,
+                                color: AppTheme.textMid,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     )),
                 if (order.items.length > 3)
-                  Text(
-                    '+ ${order.items.length - 3} more item(s)',
-                    style: const TextStyle(
-                        fontSize: 12, color: AppTheme.textLight),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 12),
+                    child: Text(
+                      '+ ${order.items.length - 3} more',
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        color: AppTheme.textLight,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                   ),
               ],
             ),
           ),
 
-          const Divider(height: 1),
+          Divider(color: AppTheme.divider.withOpacity(0.6), height: 1),
 
-          // Footer: total + WhatsApp
+          // Footer
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 10, 16, 14),
+            padding: const EdgeInsets.fromLTRB(18, 12, 18, 14),
             child: Row(
               children: [
                 Text(
                   order.formattedTotal,
-                  style: const TextStyle(
-                    fontSize: 16,
+                  style: GoogleFonts.poppins(
+                    fontSize: 17,
                     fontWeight: FontWeight.w800,
                     color: AppTheme.primary,
                   ),
@@ -166,27 +228,27 @@ class _OrderCard extends StatelessWidget {
                     if (!sent && context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                            content:
-                                Text('Could not open WhatsApp.')),
+                            content: Text('Could not open WhatsApp.')),
                       );
                     }
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 6),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF25D366).withOpacity(0.12),
-                      borderRadius: BorderRadius.circular(8),
+                      color: const Color(0xFF25D366).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Row(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text('📲', style: TextStyle(fontSize: 14)),
-                        SizedBox(width: 4),
+                        const Text('📲', style: TextStyle(fontSize: 14)),
+                        const SizedBox(width: 5),
                         Text(
                           'WhatsApp',
-                          style: TextStyle(
+                          style: GoogleFonts.inter(
                             fontSize: 12,
-                            color: Color(0xFF1B7A40),
+                            color: const Color(0xFF1B7A40),
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -200,6 +262,19 @@ class _OrderCard extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Color _statusColor(OrderStatus status) {
+    switch (status) {
+      case OrderStatus.pending:
+        return const Color(0xFFE65100);
+      case OrderStatus.confirmed:
+        return const Color(0xFF2E7D32);
+      case OrderStatus.completed:
+        return const Color(0xFF1565C0);
+      case OrderStatus.cancelled:
+        return const Color(0xFFC62828);
+    }
   }
 }
 
@@ -243,8 +318,8 @@ class _StatusBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
-        '${status.emoji} ${status.label}',
-        style: TextStyle(
+        status.label,
+        style: GoogleFonts.inter(
           fontSize: 11,
           fontWeight: FontWeight.w700,
           color: _fg,

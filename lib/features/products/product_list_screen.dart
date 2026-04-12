@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_theme.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/product_provider.dart';
@@ -9,316 +10,276 @@ import 'widgets/product_card.dart';
 import 'widgets/category_filter_bar.dart';
 import 'widgets/product_detail_sheet.dart';
 import 'widgets/bottom_nav_bar.dart';
- 
-class ProductListScreen extends ConsumerWidget {
+
+class ProductListScreen extends ConsumerStatefulWidget {
   const ProductListScreen({super.key});
- 
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(currentUserProvider).maybeWhen(
-      data: (userData) => userData,
-      orElse: () => null,
-    );
-    final productsAsync = ref.watch(filteredProductsProvider);
-    final categoriesAsync = ref.watch(categoriesProvider);
-    final selectedCategory = ref.watch(selectedCategoryProvider);
+  ConsumerState<ProductListScreen> createState() => _ProductListScreenState();
+}
+
+class _ProductListScreenState extends ConsumerState<ProductListScreen> {
+  String _searchQuery = '';
+  String _selectedCategory = '';
+
+  @override
+  Widget build(BuildContext context) {
+    final productsAsync = ref.watch(productsStreamProvider);
+    final userAsync = ref.watch(currentUserProvider);
     final cartCount = ref.watch(cartCountProvider);
-    final searchQuery = ref.watch(searchQueryProvider);
- 
+
     return Scaffold(
-      backgroundColor: AppTheme.background,
-      body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            // App bar
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-                child: Row(
-                  children: [
-                    Expanded(
+      extendBody: true,
+      body: productsAsync.when(
+        data: (products) {
+          // Filter logic
+          final filteredProducts = products.where((p) {
+            final matchSearch =
+                _searchQuery.isEmpty ||
+                p.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+                p.category.toLowerCase().contains(_searchQuery.toLowerCase());
+            final matchCategory =
+                _selectedCategory.isEmpty || p.category == _selectedCategory;
+            return matchSearch && matchCategory;
+          }).toList();
+
+          // Get unique categories
+          final categories = products.map((p) => p.category).toSet().toList()
+            ..sort();
+
+          return CustomScrollView(
+            slivers: [
+              // ── Header ───────────────────────────────────────────────────
+              SliverToBoxAdapter(
+                child: Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Color(0xFF1B4332), Color(0xFF2D6A4F)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                  child: SafeArea(
+                    bottom: false,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            'Hello, ${user?.name.split(' ').first ?? 'there'} 👋',
-                            style: const TextStyle(
-                              fontSize: 13,
-                              color: AppTheme.textMid,
-                            ),
+                          // Top row: greeting + profile
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Hello, ${userAsync.maybeWhen(data: (user) => user?.name.split(' ').first, orElse: () => null) ?? 'there'} 👋',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.white,
+                                        letterSpacing: -0.3,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      'Ready to grab some sayur?',
+                                      style: GoogleFonts.inter(
+                                        fontSize: 14,
+                                        color: Colors.white.withOpacity(0.7),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: () => context.push('/profile'),
+                                child: Container(
+                                  width: 44,
+                                  height: 44,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.15),
+                                    borderRadius: BorderRadius.circular(14),
+                                    border: Border.all(
+                                      color: Colors.white.withOpacity(0.2),
+                                    ),
+                                  ),
+                                  child: const Icon(
+                                    Icons.person_rounded,
+                                    size: 22,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                          const Text(
-                            'Fresh Vegetables',
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.w800,
-                              color: AppTheme.textDark,
+
+                          const SizedBox(height: 20),
+
+                          // Search bar
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.12),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: Colors.white.withOpacity(0.15),
+                              ),
+                            ),
+                            child: TextField(
+                              onChanged: (v) =>
+                                  setState(() => _searchQuery = v),
+                              style: GoogleFonts.inter(
+                                fontSize: 14,
+                                color: Colors.white,
+                              ),
+                              decoration: InputDecoration(
+                                hintText: 'Search vegetables...',
+                                hintStyle: GoogleFonts.inter(
+                                  fontSize: 14,
+                                  color: Colors.white.withOpacity(0.5),
+                                ),
+                                prefixIcon: Icon(
+                                  Icons.search_rounded,
+                                  color: Colors.white.withOpacity(0.6),
+                                  size: 22,
+                                ),
+                                border: InputBorder.none,
+                                enabledBorder: InputBorder.none,
+                                focusedBorder: InputBorder.none,
+                                filled: false,
+                                contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 14,
+                                ),
+                              ),
                             ),
                           ),
                         ],
                       ),
                     ),
- 
-                    // Cart icon with badge
-                    Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        IconButton(
-                          onPressed: () => context.go('/cart'),
-                          icon: const Icon(Icons.shopping_basket_outlined),
-                          style: IconButton.styleFrom(
-                            backgroundColor: AppTheme.surface,
-                            foregroundColor: AppTheme.textDark,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              side: const BorderSide(color: AppTheme.divider),
+                  ),
+                ),
+              ),
+
+              // ── Category filter ──────────────────────────────────────────
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 18, bottom: 6),
+                  child: CategoryFilterBar(
+                    categories: categories,
+                    selected: _selectedCategory,
+                    onSelected: (cat) =>
+                        setState(() => _selectedCategory = cat),
+                  ),
+                ),
+              ),
+
+              // ── Results count ────────────────────────────────────────────
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(22, 10, 22, 4),
+                  child: Text(
+                    '${filteredProducts.length} product${filteredProducts.length == 1 ? '' : 's'}',
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      color: AppTheme.textLight,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ),
+
+              // ── Product grid ─────────────────────────────────────────────
+              filteredProducts.isEmpty
+                  ? SliverFillRemaining(
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.search_off_rounded,
+                              size: 56,
+                              color: AppTheme.textLight.withOpacity(0.4),
                             ),
-                          ),
-                        ),
-                        if (cartCount > 0)
-                          Positioned(
-                            top: -4,
-                            right: -4,
-                            child: Container(
-                              padding: const EdgeInsets.all(4),
-                              decoration: const BoxDecoration(
-                                color: AppTheme.accent,
-                                shape: BoxShape.circle,
+                            const SizedBox(height: 12),
+                            Text(
+                              'No products found',
+                              style: GoogleFonts.poppins(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: AppTheme.textMid,
                               ),
-                              constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
-                              child: Text(
-                                '$cartCount',
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w700,
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Try a different search or category',
+                              style: GoogleFonts.inter(
+                                fontSize: 13,
+                                color: AppTheme.textLight,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  : SliverPadding(
+                      padding: const EdgeInsets.fromLTRB(20, 8, 20, 120),
+                      sliver: SliverGrid(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              mainAxisSpacing: 14,
+                              crossAxisSpacing: 14,
+                              childAspectRatio: 0.68,
+                            ),
+                        delegate: SliverChildBuilderDelegate((context, index) {
+                          final product = filteredProducts[index];
+                          return ProductCard(
+                            product: product,
+                            onTap: () => _showDetail(context, product),
+                            onAddToCart: () {
+                              ref
+                                  .read(cartProvider.notifier)
+                                  .addItem(product, 1);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    '${product.name} added to cart',
+                                  ),
+                                  duration: const Duration(milliseconds: 1500),
                                 ),
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                    const SizedBox(width: 8),
-                    // Account menu
-                    PopupMenuButton<String>(
-                      onSelected: (value) {
-                        if (value == 'logout') {
-                          ref.read(authNotifierProvider.notifier).signOut();
-                        }
-                      },
-                      itemBuilder: (BuildContext context) => [
-                        const PopupMenuItem<String>(
-                          value: 'logout',
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.logout_rounded, size: 20),
-                              SizedBox(width: 12),
-                              Text('Logout'),
-                            ],
-                          ),
-                        ),
-                      ],
-                      icon: const Icon(Icons.account_circle_outlined),
-                      style: IconButton.styleFrom(
-                        backgroundColor: AppTheme.surface,
-                        foregroundColor: AppTheme.textDark,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          side: const BorderSide(color: AppTheme.divider),
-                        ),
+                              );
+                            },
+                          );
+                        }, childCount: filteredProducts.length),
                       ),
                     ),
-                  ],
-                ),
-              ),
-            ),
- 
-            // Search bar
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
-                child: TextField(
-                  onChanged: (v) =>
-                      ref.read(searchQueryProvider.notifier).state = v,
-                  decoration: InputDecoration(
-                    hintText: 'Search vegetables...',
-                    prefixIcon: const Icon(Icons.search_rounded,
-                        size: 20, color: AppTheme.textLight),
-                    suffixIcon: searchQuery.isNotEmpty
-                        ? IconButton(
-                            icon: const Icon(Icons.close_rounded,
-                                size: 18, color: AppTheme.textLight),
-                            onPressed: () =>
-                                ref.read(searchQueryProvider.notifier).state = '',
-                          )
-                        : null,
-                  ),
-                ),
-              ),
-            ),
- 
-            // Category filter
-            SliverToBoxAdapter(
-              child: categoriesAsync.when(
-                data: (categories) => CategoryFilterBar(
-                  categories: categories,
-                  selected: selectedCategory,
-                  onSelected: (cat) =>
-                      ref.read(selectedCategoryProvider.notifier).state = cat,
-                ),
-                loading: () => const SizedBox(height: 38),
-                error: (_, _) => const SizedBox.shrink(),
-              ),
-            ),
- 
-            const SliverToBoxAdapter(child: SizedBox(height: 16)),
- 
-            // Products grid
-            productsAsync.when(
-              data: (products) {
-                if (products.isEmpty) {
-                  return SliverFillRemaining(
-                    child: _EmptyState(
-                      hasSearch: searchQuery.isNotEmpty || selectedCategory.isNotEmpty,
-                    ),
-                  );
-                }
- 
-                return SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
-                  sliver: SliverGrid(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                        final product = products[index];
-                        return ProductCard(
-                          product: product,
-                          onTap: () => _showDetail(context, ref, product),
-                          onAddToCart: () {
-                            ref.read(cartProvider.notifier).addItem(product, 1);
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text('${product.name} added to cart'),
-                              duration: const Duration(seconds: 1),
-                            ));
-                          },
-                        );
-                      },
-                      childCount: products.length,
-                    ),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
-                      childAspectRatio: 0.72,
-                    ),
-                  ),
-                );
-              },
-              loading: () => const SliverFillRemaining(child: _LoadingGrid()),
-              error: (error, _) => SliverFillRemaining(
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.error_outline_rounded,
-                          size: 48, color: AppTheme.error),
-                      const SizedBox(height: 12),
-                      Text(
-                        'Failed to load products\n$error',
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(color: AppTheme.textMid),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+            ],
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, _) => Center(child: Text('Error: $e')),
       ),
-      bottomNavigationBar: BottomNavBar(currentRoute: '/home'),
+      bottomNavigationBar: const BottomNavBar(currentRoute: '/home'),
     );
   }
- 
-  void _showDetail(BuildContext context, WidgetRef ref, product) {
+
+  void _showDetail(BuildContext context, product) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (ctx) => DraggableScrollableSheet(
-        initialChildSize: 0.75,
-        maxChildSize: 0.95,
-        minChildSize: 0.5,
-        builder: (_, controller) => ProductDetailSheet(
-          product: product,
-          onAddToCart: (quantity) {
-            ref.read(cartProvider.notifier).addItem(product, quantity);
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text('${product.name} x$quantity added to cart'),
-              duration: const Duration(seconds: 1),
-            ));
-          },
-        ),
-      ),
-    );
-  }
-}
- 
-class _EmptyState extends StatelessWidget {
-  final bool hasSearch;
-  const _EmptyState({required this.hasSearch});
- 
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.search_off_rounded,
-              size: 56, color: AppTheme.primaryLight),
-          const SizedBox(height: 16),
-          Text(
-            hasSearch ? 'No vegetables found' : 'No products available',
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              color: AppTheme.textDark,
+      builder: (_) => ProductDetailSheet(
+        product: product,
+        onAddToCart: (qty) {
+          ref.read(cartProvider.notifier).addItem(product, qty);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('${product.name} × $qty added to cart'),
+              duration: const Duration(milliseconds: 1500),
             ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            hasSearch ? 'Try a different search or category' : 'Check back soon!',
-            style: const TextStyle(fontSize: 13, color: AppTheme.textMid),
-          ),
-        ],
-      ),
-    );
-  }
-}
- 
-class _LoadingGrid extends StatelessWidget {
-  const _LoadingGrid();
- 
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: GridView.builder(
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: 6,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 12,
-          mainAxisSpacing: 12,
-          childAspectRatio: 0.72,
-        ),
-        itemBuilder: (_, _) => Container(
-          decoration: BoxDecoration(
-            color: const Color(0xFFEEF3EC),
-            borderRadius: BorderRadius.circular(16),
-          ),
-        ),
+          );
+        },
       ),
     );
   }

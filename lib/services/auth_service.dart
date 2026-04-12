@@ -32,12 +32,13 @@ class AuthService {
     });
   }
 
-  // All new registrations are buyers by default
+  // Register with specified role (defaults to buyer)
   Future<UserModel> register({
     required String name,
     required String email,
     required String password,
     required String phone,
+    UserRole role = UserRole.buyer,
   }) async {
     try {
       final credential = await _auth.createUserWithEmailAndPassword(
@@ -50,7 +51,7 @@ class AuthService {
         name: name.trim(),
         email: email.trim(),
         phone: phone.trim(),
-        role: UserRole.buyer, // default role for new sign-ups
+        role: role,
         createdAt: DateTime.now(),
       );
 
@@ -80,7 +81,19 @@ class AuthService {
   }
 
   Future<void> signOut() async => await _auth.signOut();
-
+ 
+  Future<void> updateUserData(UserModel user) async {
+    try {
+      await _db.collection('users').doc(user.uid).update({
+        'name': user.name,
+        'phone': user.phone,
+        'photoUrl': user.photoUrl,
+      });
+    } catch (e) {
+      throw Exception('Failed to update profile: $e');
+    }
+  }
+ 
   Future<void> sendPasswordReset(String email) async {
     try {
       await _auth.sendPasswordResetEmail(email: email.trim());

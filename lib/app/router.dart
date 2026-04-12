@@ -17,7 +17,9 @@ import '../features/admin/admin_orders_screen.dart';
 import '../features/admin/manage_products_screen.dart';
 import '../features/supplier/supplier_dashboard.dart';
 import '../features/supplier/supplier_orders_screen.dart';
-import '../features/supplier/manage_products_screen.dart' hide ManageProductsScreen;
+import '../features/supplier/manage_products_screen.dart'
+    hide ManageProductsScreen;
+import '../features/profile/profile_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authStateProvider);
@@ -45,6 +47,7 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       if (isLoggedIn && (isAuthPage || isSplashPage)) {
         if (user?.isAdmin == true) return '/admin';
+        if (user?.isSupplier == true) return '/supplier';
         return '/home';
       }
 
@@ -54,65 +57,145 @@ final routerProvider = Provider<GoRouter>((ref) {
       // ── Auth ──────────────────────────────────────────────
       GoRoute(
         path: '/splash',
-        builder: (context, state) => const SplashScreen(),
+        pageBuilder: (context, state) => _buildSmoothPage(
+          state,
+          const SplashScreen(),
+        ),
       ),
-      GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
+      GoRoute(
+        path: '/login',
+        pageBuilder: (context, state) => _buildSmoothPage(
+          state,
+          const LoginScreen(),
+        ),
+      ),
       GoRoute(
         path: '/register',
-        builder: (context, state) => const RegisterScreen(),
+        pageBuilder: (context, state) => _buildSmoothPage(
+          state,
+          const RegisterScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/profile',
+        pageBuilder: (context, state) => _buildSmoothPage(
+          state,
+          const ProfileScreen(),
+        ),
       ),
 
       // ── Buyer ─────────────────────────────────────────────
       GoRoute(
         path: '/home',
-        builder: (context, state) => const ProductListScreen(),
+        pageBuilder: (context, state) => _buildSmoothPage(
+          state,
+          const ProductListScreen(),
+        ),
       ),
       GoRoute(
         path: '/products',
-        builder: (context, state) => const ProductListScreen(),
+        pageBuilder: (context, state) => _buildSmoothPage(
+          state,
+          const ProductListScreen(),
+        ),
       ),
-
-      GoRoute(path: '/cart', builder: (context, state) => const CartScreen()),
+      GoRoute(
+        path: '/cart',
+        pageBuilder: (context, state) => _buildSmoothPage(
+          state,
+          const CartScreen(),
+        ),
+      ),
       GoRoute(
         path: '/checkout',
-        builder: (context, state) => const CheckoutScreen(),
+        pageBuilder: (context, state) => _buildSmoothPage(
+          state,
+          const CheckoutScreen(),
+        ),
       ),
       GoRoute(
         path: '/order-success',
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final order = state.extra as OrderModel;
-          return OrderSuccessScreen(order: order);
+          return _buildSmoothPage(
+            state,
+            OrderSuccessScreen(order: order),
+          );
         },
       ),
       GoRoute(
         path: '/orders',
-        builder: (context, state) => const MyOrdersScreen(),
+        pageBuilder: (context, state) => _buildSmoothPage(
+          state,
+          const MyOrdersScreen(),
+        ),
       ),
 
       // ── Supplier / Admin ───────────────────────────────────
-      GoRoute(path: '/supplier', builder: (_, __) => const SupplierDashboard()),
+      GoRoute(
+        path: '/supplier',
+        pageBuilder: (context, state) => _buildSmoothPage(
+          state,
+          const SupplierDashboard(),
+        ),
+      ),
       GoRoute(
         path: '/supplier/orders',
-        builder: (_, __) => const SupplierOrdersScreen(),
+        pageBuilder: (context, state) => _buildSmoothPage(
+          state,
+          const SupplierOrdersScreen(),
+        ),
       ),
       GoRoute(
         path: '/supplier/products',
-        builder: (_, __) => const ManageProductsScreen(),
+        pageBuilder: (context, state) => _buildSmoothPage(
+          state,
+          const ManageProductsScreen(),
+        ),
       ),
       GoRoute(
         path: '/admin',
-        builder: (context, state) => const AdminDashboard(),
+        pageBuilder: (context, state) => _buildSmoothPage(
+          state,
+          const AdminDashboard(),
+        ),
       ),
       GoRoute(
         path: '/admin/orders',
-        builder: (context, state) => const AdminOrdersScreen(),
+        pageBuilder: (context, state) => _buildSmoothPage(
+          state,
+          const AdminOrdersScreen(),
+        ),
       ),
       GoRoute(
         path: '/admin/products',
-        builder: (context, state) => const ManageProductsScreen(),
+        pageBuilder: (context, state) => _buildSmoothPage(
+          state,
+          const ManageProductsScreen(),
+        ),
       ),
     ],
     errorBuilder: (context, state) =>
         Scaffold(body: Center(child: Text('Page not found: ${state.error}'))),
   );
 });
+
+CustomTransitionPage _buildSmoothPage(GoRouterState state, Widget child) {
+  return CustomTransitionPage(
+    key: state.pageKey,
+    child: child,
+    transitionDuration: const Duration(milliseconds: 300),
+    reverseTransitionDuration: const Duration(milliseconds: 300),
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      return FadeTransition(
+        opacity: CurveTween(curve: Curves.easeIn).animate(animation),
+        child: ScaleTransition(
+          scale: Tween<double>(begin: 0.98, end: 1.0)
+              .chain(CurveTween(curve: Curves.easeOutCirc))
+              .animate(animation),
+          child: child,
+        ),
+      );
+    },
+  );
+}

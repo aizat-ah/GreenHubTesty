@@ -4,34 +4,35 @@ import 'package:flutter_riverpod/legacy.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/order_model.dart';
 import '../../providers/order_provider.dart';
 import '../../services/order_service.dart';
- 
+
 // Admin all-orders stream provider
 final adminOrdersProvider = StreamProvider<List<OrderModel>>((ref) {
   return ref.watch(orderServiceProvider).allOrdersStream();
 });
- 
-// Selected status filter for admin (null = all)
+
+// Selected status filter (null = all)
 final adminOrderFilterProvider = StateProvider<OrderStatus?>((ref) => null);
- 
+
 // Filtered admin orders
 final filteredAdminOrdersProvider =
     Provider<AsyncValue<List<OrderModel>>>((ref) {
   final ordersAsync = ref.watch(adminOrdersProvider);
   final filter = ref.watch(adminOrderFilterProvider);
- 
+
   return ordersAsync.whenData((orders) {
     if (filter == null) return orders;
     return orders.where((o) => o.status == filter).toList();
   });
 });
- 
+
 class AdminOrdersScreen extends ConsumerWidget {
   const AdminOrdersScreen({super.key});
- 
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final ordersAsync = ref.watch(filteredAdminOrdersProvider);
@@ -40,13 +41,18 @@ class AdminOrdersScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppTheme.background,
       appBar: AppBar(
-        title: const Text('All Orders'),
+        title: Text(
+          'All Orders',
+          style: GoogleFonts.poppins(
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_rounded),
           onPressed: () => context.pop(),
         ),
         actions: [
-          // Order count badge
           allOrdersAsync.when(
             data: (orders) {
               final pendingCount = orders
@@ -58,12 +64,12 @@ class AdminOrdersScreen extends ConsumerWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: AppTheme.accent,
+                  gradient: AppTheme.accentGradient,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
                   '$pendingCount new',
-                  style: const TextStyle(
+                  style: GoogleFonts.poppins(
                     color: Colors.white,
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
@@ -83,10 +89,13 @@ class AdminOrdersScreen extends ConsumerWidget {
             selected: selectedFilter,
             onSelected: (status) =>
                 ref.read(adminOrderFilterProvider.notifier).state = status,
-            allOrders: allOrdersAsync.whenData((orders) => orders).value ?? [],
+            allOrders: allOrdersAsync.maybeWhen(
+              data: (orders) => orders,
+              orElse: () => [],
+            ),
           ),
           const SizedBox(height: 8),
- 
+
           // Orders list
           Expanded(
             child: ordersAsync.when(
@@ -98,7 +107,7 @@ class AdminOrdersScreen extends ConsumerWidget {
                 return ListView.separated(
                   padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
                   itemCount: orders.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 12),
+                  separatorBuilder: (_, __) => const SizedBox(height: 14),
                   itemBuilder: (context, index) {
                     return _AdminOrderCard(order: orders[index]);
                   },
@@ -115,25 +124,25 @@ class AdminOrdersScreen extends ConsumerWidget {
     );
   }
 }
- 
-// ─── Status filter bar ────────────────────────────────────────────────────────
- 
+
+// â”€â”€â”€ Status filter bar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
 class _StatusFilterBar extends StatelessWidget {
   final OrderStatus? selected;
   final ValueChanged<OrderStatus?> onSelected;
   final List<OrderModel> allOrders;
- 
+
   const _StatusFilterBar({
     required this.selected,
     required this.onSelected,
     required this.allOrders,
   });
- 
+
   int _count(OrderStatus? status) {
     if (status == null) return allOrders.length;
     return allOrders.where((o) => o.status == status).length;
   }
- 
+
   @override
   Widget build(BuildContext context) {
     final filters = <OrderStatus?>[
@@ -143,15 +152,15 @@ class _StatusFilterBar extends StatelessWidget {
       OrderStatus.completed,
       OrderStatus.cancelled,
     ];
- 
+
     final labels = {
       null: 'All',
-      OrderStatus.pending: '🕐 Pending',
-      OrderStatus.confirmed: '✅ Confirmed',
-      OrderStatus.completed: '🎉 Done',
-      OrderStatus.cancelled: '❌ Cancelled',
+      OrderStatus.pending: 'ðŸ• Pending',
+      OrderStatus.confirmed: 'âœ… Confirmed',
+      OrderStatus.completed: 'ðŸŽ‰ Done',
+      OrderStatus.cancelled: 'âŒ Cancelled',
     };
- 
+
     return SizedBox(
       height: 42,
       child: ListView.separated(
@@ -163,25 +172,33 @@ class _StatusFilterBar extends StatelessWidget {
           final filter = filters[index];
           final isSelected = selected == filter;
           final count = _count(filter);
- 
+
           return GestureDetector(
             onTap: () => onSelected(filter),
             child: AnimatedContainer(
-              duration: const Duration(milliseconds: 180),
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeOutCubic,
               padding:
                   const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               decoration: BoxDecoration(
-                color: isSelected ? AppTheme.primary : AppTheme.surface,
+                gradient: isSelected ? AppTheme.primaryGradient : null,
+                color: isSelected ? null : AppTheme.surface,
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: isSelected ? AppTheme.primary : AppTheme.divider,
-                ),
+                boxShadow: isSelected
+                    ? [
+                        BoxShadow(
+                          color: AppTheme.primary.withOpacity(0.25),
+                          blurRadius: 8,
+                          offset: const Offset(0, 3),
+                        ),
+                      ]
+                    : AppTheme.softShadow,
               ),
               child: Row(
                 children: [
                   Text(
                     labels[filter]!,
-                    style: TextStyle(
+                    style: GoogleFonts.inter(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
                       color: isSelected
@@ -196,12 +213,12 @@ class _StatusFilterBar extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: isSelected
                           ? Colors.white.withOpacity(0.25)
-                          : AppTheme.divider,
+                          : AppTheme.surfaceDim,
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Text(
                       '$count',
-                      style: TextStyle(
+                      style: GoogleFonts.inter(
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
                         color: isSelected
@@ -219,33 +236,32 @@ class _StatusFilterBar extends StatelessWidget {
     );
   }
 }
- 
-// ─── Admin order card ─────────────────────────────────────────────────────────
- 
+
+// â”€â”€â”€ Admin order card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
 class _AdminOrderCard extends ConsumerWidget {
   final OrderModel order;
- 
+
   const _AdminOrderCard({required this.order});
- 
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       decoration: BoxDecoration(
         color: AppTheme.surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: order.status == OrderStatus.pending
-              ? const Color(0xFFFFCC80)
-              : AppTheme.divider,
-          width: order.status == OrderStatus.pending ? 1.5 : 1,
-        ),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: AppTheme.cardShadow,
+        border: order.status == OrderStatus.pending
+            ? Border.all(
+                color: const Color(0xFFF4A261).withOpacity(0.5), width: 1.5)
+            : null,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header: order ID + status
+          // Header
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
+            padding: const EdgeInsets.fromLTRB(18, 16, 18, 12),
             child: Row(
               children: [
                 Expanded(
@@ -254,8 +270,8 @@ class _AdminOrderCard extends ConsumerWidget {
                     children: [
                       Text(
                         'Order #${order.id.substring(0, 8).toUpperCase()}',
-                        style: const TextStyle(
-                          fontSize: 13,
+                        style: GoogleFonts.poppins(
+                          fontSize: 14,
                           fontWeight: FontWeight.w700,
                           color: AppTheme.textDark,
                         ),
@@ -264,8 +280,10 @@ class _AdminOrderCard extends ConsumerWidget {
                       Text(
                         DateFormat('dd MMM yyyy, hh:mm a')
                             .format(order.createdAt),
-                        style: const TextStyle(
-                            fontSize: 11, color: AppTheme.textLight),
+                        style: GoogleFonts.inter(
+                          fontSize: 11,
+                          color: AppTheme.textLight,
+                        ),
                       ),
                     ],
                   ),
@@ -274,52 +292,61 @@ class _AdminOrderCard extends ConsumerWidget {
               ],
             ),
           ),
- 
+
           // Customer info
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
-            child: Row(
-              children: [
-                const Icon(Icons.person_outline,
-                    size: 14, color: AppTheme.textLight),
-                const SizedBox(width: 6),
-                Text(
-                  order.customerName,
-                  style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: AppTheme.textDark),
-                ),
-                const SizedBox(width: 12),
-                const Icon(Icons.phone_outlined,
-                    size: 14, color: AppTheme.textLight),
-                const SizedBox(width: 4),
-                GestureDetector(
-                  onTap: () => _callCustomer(order.customerPhone),
-                  child: Text(
-                    order.customerPhone,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      color: AppTheme.primary,
-                      fontWeight: FontWeight.w600,
-                      decoration: TextDecoration.underline,
+            padding: const EdgeInsets.fromLTRB(18, 0, 18, 12),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: AppTheme.surfaceDim,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.person_outline,
+                      size: 14, color: AppTheme.textLight),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      order.customerName,
+                      style: GoogleFonts.inter(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: AppTheme.textDark,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                  const Icon(Icons.phone_outlined,
+                      size: 14, color: AppTheme.textLight),
+                  const SizedBox(width: 4),
+                  GestureDetector(
+                    onTap: () => _callCustomer(order.customerPhone),
+                    child: Text(
+                      order.customerPhone,
+                      style: GoogleFonts.inter(
+                        fontSize: 13,
+                        color: AppTheme.primary,
+                        fontWeight: FontWeight.w600,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
- 
-          const Divider(height: 1),
- 
+
+          Divider(color: AppTheme.divider.withOpacity(0.6), height: 1),
+
           // Order items
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
+            padding: const EdgeInsets.fromLTRB(18, 12, 18, 12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ...order.items.map((item) => Padding(
-                      padding: const EdgeInsets.only(bottom: 4),
+                      padding: const EdgeInsets.only(bottom: 5),
                       child: Row(
                         children: [
                           const Icon(Icons.eco_rounded,
@@ -327,14 +354,16 @@ class _AdminOrderCard extends ConsumerWidget {
                           const SizedBox(width: 6),
                           Expanded(
                             child: Text(
-                              '${item.productName} × ${item.quantity} ${item.unit}',
-                              style: const TextStyle(
-                                  fontSize: 13, color: AppTheme.textMid),
+                              '${item.productName} Ã— ${item.quantity} ${item.unit}',
+                              style: GoogleFonts.inter(
+                                fontSize: 13,
+                                color: AppTheme.textMid,
+                              ),
                             ),
                           ),
                           Text(
                             item.formattedSubtotal,
-                            style: const TextStyle(
+                            style: GoogleFonts.poppins(
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
                               color: AppTheme.textDark,
@@ -344,26 +373,26 @@ class _AdminOrderCard extends ConsumerWidget {
                       ),
                     )),
                 if (order.note.isNotEmpty) ...[
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 8),
                   Container(
-                    padding: const EdgeInsets.all(8),
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
                       color: const Color(0xFFFFFDE7),
-                      borderRadius: BorderRadius.circular(8),
-                      border:
-                          Border.all(color: const Color(0xFFFFF176)),
+                      borderRadius: BorderRadius.circular(10),
                     ),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('📝 ',
+                        const Text('ðŸ“ ',
                             style: TextStyle(fontSize: 12)),
                         Expanded(
                           child: Text(
                             order.note,
-                            style: const TextStyle(
-                                fontSize: 12,
-                                color: Color(0xFF5D4037)),
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              color: const Color(0xFF5D4037),
+                            ),
                           ),
                         ),
                       ],
@@ -373,36 +402,34 @@ class _AdminOrderCard extends ConsumerWidget {
               ],
             ),
           ),
- 
-          const Divider(height: 1),
- 
+
+          Divider(color: AppTheme.divider.withOpacity(0.6), height: 1),
+
           // Footer: total + actions
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 10, 16, 14),
+            padding: const EdgeInsets.fromLTRB(18, 12, 18, 16),
             child: Row(
               children: [
                 Text(
                   order.formattedTotal,
-                  style: const TextStyle(
-                    fontSize: 16,
+                  style: GoogleFonts.poppins(
+                    fontSize: 17,
                     fontWeight: FontWeight.w800,
                     color: AppTheme.primary,
                   ),
                 ),
                 const Spacer(),
-                // WhatsApp customer button
                 _ActionButton(
-                  icon: '📲',
+                  icon: 'ðŸ“²',
                   label: 'Chat',
                   color: const Color(0xFF25D366),
                   onTap: () => _whatsappCustomer(order),
                 ),
                 const SizedBox(width: 8),
-                // Update status button
                 if (order.status != OrderStatus.completed &&
                     order.status != OrderStatus.cancelled)
                   _ActionButton(
-                    icon: '✏️',
+                    icon: 'âœï¸',
                     label: 'Status',
                     color: AppTheme.primary,
                     onTap: () =>
@@ -415,12 +442,12 @@ class _AdminOrderCard extends ConsumerWidget {
       ),
     );
   }
- 
+
   void _callCustomer(String phone) async {
     final uri = Uri.parse('tel:$phone');
     if (await canLaunchUrl(uri)) launchUrl(uri);
   }
- 
+
   void _whatsappCustomer(OrderModel order) async {
     final msg = Uri.encodeComponent(
         'Hi ${order.customerName}, your order #${order.id.substring(0, 8).toUpperCase()} (${order.formattedTotal}) is being processed. We\'ll contact you shortly!');
@@ -429,40 +456,52 @@ class _AdminOrderCard extends ConsumerWidget {
       launchUrl(uri, mode: LaunchMode.externalApplication);
     }
   }
- 
+
   void _showStatusSheet(
       BuildContext context, WidgetRef ref, OrderModel order) {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
       builder: (ctx) => _StatusUpdateSheet(order: order),
     );
   }
 }
- 
-// ─── Status update bottom sheet ───────────────────────────────────────────────
- 
+
+// â”€â”€â”€ Status update bottom sheet â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
 class _StatusUpdateSheet extends ConsumerWidget {
   final OrderModel order;
- 
+
   const _StatusUpdateSheet({required this.order});
- 
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final options = _nextStatuses(order.status);
- 
+
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 36),
+      padding: const EdgeInsets.fromLTRB(24, 24, 24, 40),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Handle
+          Center(
+            child: Container(
+              width: 40,
+              height: 4,
+              margin: const EdgeInsets.only(bottom: 20),
+              decoration: BoxDecoration(
+                color: AppTheme.divider,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
           Text(
             'Update Order #${order.id.substring(0, 8).toUpperCase()}',
-            style: const TextStyle(
-              fontSize: 16,
+            style: GoogleFonts.poppins(
+              fontSize: 17,
               fontWeight: FontWeight.w800,
               color: AppTheme.textDark,
             ),
@@ -470,7 +509,10 @@ class _StatusUpdateSheet extends ConsumerWidget {
           const SizedBox(height: 4),
           Text(
             'Current: ${order.status.emoji} ${order.status.label}',
-            style: const TextStyle(fontSize: 13, color: AppTheme.textMid),
+            style: GoogleFonts.inter(
+              fontSize: 13,
+              color: AppTheme.textMid,
+            ),
           ),
           const SizedBox(height: 20),
           ...options.map((status) => _StatusOption(
@@ -494,8 +536,7 @@ class _StatusUpdateSheet extends ConsumerWidget {
       ),
     );
   }
- 
-  // Only show logical next statuses
+
   List<OrderStatus> _nextStatuses(OrderStatus current) {
     switch (current) {
       case OrderStatus.pending:
@@ -507,13 +548,13 @@ class _StatusUpdateSheet extends ConsumerWidget {
     }
   }
 }
- 
+
 class _StatusOption extends StatelessWidget {
   final OrderStatus status;
   final VoidCallback onTap;
- 
+
   const _StatusOption({required this.status, required this.onTap});
- 
+
   Color get _color {
     switch (status) {
       case OrderStatus.confirmed:
@@ -526,7 +567,7 @@ class _StatusOption extends StatelessWidget {
         return AppTheme.textMid;
     }
   }
- 
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -534,19 +575,19 @@ class _StatusOption extends StatelessWidget {
       child: Container(
         width: double.infinity,
         margin: const EdgeInsets.only(bottom: 10),
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: _color.withOpacity(0.07),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: _color.withOpacity(0.3)),
+          color: _color.withOpacity(0.06),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: _color.withOpacity(0.2)),
         ),
         child: Row(
           children: [
-            Text(status.emoji, style: const TextStyle(fontSize: 20)),
-            const SizedBox(width: 12),
+            Text(status.emoji, style: const TextStyle(fontSize: 22)),
+            const SizedBox(width: 14),
             Text(
               'Mark as ${status.label}',
-              style: TextStyle(
+              style: GoogleFonts.poppins(
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
                 color: _color,
@@ -560,41 +601,40 @@ class _StatusOption extends StatelessWidget {
     );
   }
 }
- 
-// ─── Shared widgets ───────────────────────────────────────────────────────────
- 
+
+// â”€â”€â”€ Shared widgets â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
 class _ActionButton extends StatelessWidget {
   final String icon;
   final String label;
   final Color color;
   final VoidCallback onTap;
- 
+
   const _ActionButton({
     required this.icon,
     required this.label,
     required this.color,
     required this.onTap,
   });
- 
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding:
-            const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: color.withOpacity(0.3)),
+          color: color.withOpacity(0.08),
+          borderRadius: BorderRadius.circular(10),
         ),
         child: Row(
           children: [
             Text(icon, style: const TextStyle(fontSize: 13)),
-            const SizedBox(width: 4),
+            const SizedBox(width: 5),
             Text(
               label,
-              style: TextStyle(
+              style: GoogleFonts.inter(
                 fontSize: 12,
                 color: color,
                 fontWeight: FontWeight.w600,
@@ -606,12 +646,12 @@ class _ActionButton extends StatelessWidget {
     );
   }
 }
- 
+
 class _StatusBadge extends StatelessWidget {
   final OrderStatus status;
- 
+
   const _StatusBadge({required this.status});
- 
+
   Color get _bg {
     switch (status) {
       case OrderStatus.pending:
@@ -624,7 +664,7 @@ class _StatusBadge extends StatelessWidget {
         return const Color(0xFFFFEBEE);
     }
   }
- 
+
   Color get _fg {
     switch (status) {
       case OrderStatus.pending:
@@ -637,7 +677,7 @@ class _StatusBadge extends StatelessWidget {
         return const Color(0xFFC62828);
     }
   }
- 
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -649,7 +689,7 @@ class _StatusBadge extends StatelessWidget {
       ),
       child: Text(
         '${status.emoji} ${status.label}',
-        style: TextStyle(
+        style: GoogleFonts.inter(
           fontSize: 11,
           fontWeight: FontWeight.w700,
           color: _fg,
@@ -658,36 +698,50 @@ class _StatusBadge extends StatelessWidget {
     );
   }
 }
- 
+
 class _EmptyOrders extends StatelessWidget {
   final bool hasFilter;
- 
+
   const _EmptyOrders({required this.hasFilter});
- 
+
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.receipt_long_outlined,
-              size: 64, color: AppTheme.primaryLight),
-          const SizedBox(height: 16),
+          Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              color: AppTheme.surfaceDim,
+              borderRadius: BorderRadius.circular(24),
+            ),
+            child: Icon(
+              Icons.receipt_long_outlined,
+              size: 40,
+              color: AppTheme.textLight.withOpacity(0.4),
+            ),
+          ),
+          const SizedBox(height: 18),
           Text(
             hasFilter ? 'No orders with this status' : 'No orders yet',
-            style: const TextStyle(
+            style: GoogleFonts.poppins(
               fontSize: 18,
               fontWeight: FontWeight.w700,
               color: AppTheme.textDark,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           Text(
             hasFilter
                 ? 'Try a different filter'
                 : 'Orders will appear here once customers place them',
             textAlign: TextAlign.center,
-            style: const TextStyle(color: AppTheme.textMid, fontSize: 13),
+            style: GoogleFonts.inter(
+              fontSize: 13,
+              color: AppTheme.textLight,
+            ),
           ),
         ],
       ),

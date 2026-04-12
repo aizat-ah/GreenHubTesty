@@ -7,6 +7,7 @@ class UserModel {
   final String email;
   final String phone;
   final UserRole role;
+  final String? photoUrl;
   final DateTime createdAt;
 
   const UserModel({
@@ -15,6 +16,7 @@ class UserModel {
     required this.email,
     required this.phone,
     required this.role,
+    this.photoUrl,
     required this.createdAt,
   });
 
@@ -32,6 +34,7 @@ class UserModel {
       email: map['email'] ?? '',
       phone: map['phone'] ?? '',
       role: _parseRole(map['role']),
+      photoUrl: map['photoUrl'],
       createdAt: _parseDate(map['createdAt']),
     );
   }
@@ -42,6 +45,7 @@ class UserModel {
       'email': email,
       'phone': phone,
       'role': role.name, // 'buyer' | 'supplier' | 'admin'
+      'photoUrl': photoUrl,
       'createdAt': createdAt,
     };
   }
@@ -65,6 +69,7 @@ class UserModel {
     String? email,
     String? phone,
     UserRole? role,
+    String? photoUrl,
   }) {
     return UserModel(
       uid: uid,
@@ -72,6 +77,7 @@ class UserModel {
       email: email ?? this.email,
       phone: phone ?? this.phone,
       role: role ?? this.role,
+      photoUrl: photoUrl ?? this.photoUrl,
       createdAt: createdAt,
     );
   }

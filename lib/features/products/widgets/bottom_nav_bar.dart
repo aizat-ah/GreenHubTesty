@@ -1,105 +1,79 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../core/theme/app_theme.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../../../providers/cart_provider.dart';
 
-class BottomNavBar extends StatefulWidget {
+class BottomNavBar extends ConsumerWidget {
   final String currentRoute;
 
-  const BottomNavBar({
-    super.key,
-    required this.currentRoute,
-  });
+  const BottomNavBar({super.key, required this.currentRoute});
 
-  @override
-  State<BottomNavBar> createState() => _BottomNavBarState();
-}
-
-class _BottomNavBarState extends State<BottomNavBar>
-    with TickerProviderStateMixin {
-  late List<AnimationController> _controllers;
-
-  @override
-  void initState() {
-    super.initState();
-    _controllers = List.generate(
-      3,
-      (index) => AnimationController(
-        duration: const Duration(milliseconds: 500),
-        vsync: this,
-      ),
-    );
-  }
-
-  @override
-  void dispose() {
-    for (var controller in _controllers) {
-      controller.dispose();
+  void _navigateTo(BuildContext context, String route) {
+    if (currentRoute != route) {
+      context.go(route);
     }
-    super.dispose();
-  }
-
-  void _animateIcon(int index) {
-    _controllers[index].forward(from: 0.0);
-  }
-
-  void _navigateTo(String route, int index) {
-    _animateIcon(index);
-    context.go(route);
   }
 
   @override
-  Widget build(BuildContext context) {
-    const darkGreen = Color(0xFF1B4332); // Darker shade of primary
-    const accentGreen = Color(0xFF52B788); // primaryLight for highlights
+  Widget build(BuildContext context, WidgetRef ref) {
+    const darkGreen = Color(0xFF1B4332);
+    const accentGreen = Color(0xFF52B788);
+    final cartCount = ref.watch(cartCountProvider);
 
-    return Container(
-      decoration: BoxDecoration(
-        color: darkGreen,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.15),
-            blurRadius: 20,
-            offset: const Offset(0, -5),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              // Home button
-              _NavBarItem(
-                icon: Icons.home_rounded,
-                label: 'Home',
-                isActive: widget.currentRoute == '/home',
-                onTap: () => _navigateTo('/home', 0),
-                controller: _controllers[0],
-                activeColor: accentGreen,
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 24, left: 24, right: 24),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(30),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: darkGreen.withValues(alpha: 0.85),
+                borderRadius: BorderRadius.circular(30),
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.15),
+                  width: 1,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.3),
+                    blurRadius: 30,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
               ),
-
-              // Orders button (center)
-              _NavBarItem(
-                icon: Icons.receipt_long_rounded,
-                label: 'Orders',
-                isActive: widget.currentRoute == '/orders',
-                onTap: () => _navigateTo('/orders', 1),
-                controller: _controllers[1],
-                activeColor: accentGreen,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _NavBarItem(
+                    icon: Icons.home_rounded,
+                    label: 'Home',
+                    isActive: currentRoute == '/home',
+                    onTap: () => _navigateTo(context, '/home'),
+                    activeColor: accentGreen,
+                  ),
+                  _NavBarItem(
+                    icon: Icons.receipt_long_rounded,
+                    label: 'Orders',
+                    isActive: currentRoute == '/orders',
+                    onTap: () => _navigateTo(context, '/orders'),
+                    activeColor: accentGreen,
+                  ),
+                  _NavBarItem(
+                    icon: Icons.shopping_basket_rounded,
+                    label: 'Cart',
+                    isActive: currentRoute == '/cart',
+                    onTap: () => _navigateTo(context, '/cart'),
+                    activeColor: accentGreen,
+                    badgeCount: cartCount,
+                  ),
+                ],
               ),
-
-              // Cart button
-              _NavBarItem(
-                icon: Icons.shopping_basket_rounded,
-                label: 'Cart',
-                isActive: widget.currentRoute == '/cart',
-                onTap: () => _navigateTo('/cart', 2),
-                controller: _controllers[2],
-                activeColor: accentGreen,
-              ),
-            ],
+            ),
           ),
         ),
       ),
@@ -112,54 +86,105 @@ class _NavBarItem extends StatelessWidget {
   final String label;
   final bool isActive;
   final VoidCallback onTap;
-  final AnimationController controller;
   final Color activeColor;
+  final int badgeCount;
 
   const _NavBarItem({
     required this.icon,
     required this.label,
     required this.isActive,
     required this.onTap,
-    required this.controller,
     required this.activeColor,
+    this.badgeCount = 0,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: ScaleTransition(
-        scale: Tween<double>(begin: 1.0, end: 1.15).animate(
-          CurvedAnimation(parent: controller, curve: Curves.easeInOutBack),
+      behavior: HitTestBehavior.opaque,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 350),
+        curve: Curves.easeOutCubic,
+        padding: EdgeInsets.symmetric(
+          horizontal: isActive ? 18 : 14,
+          vertical: 12,
         ),
-        child: Column(
+        decoration: BoxDecoration(
+          color: isActive
+              ? activeColor.withValues(alpha: 0.15)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: isActive
-                    ? activeColor.withOpacity(0.15)
-                    : Colors.transparent,
-              ),
-              child: Icon(
-                icon,
-                size: 24,
-                color: isActive
-                    ? activeColor
-                    : Colors.white.withOpacity(0.6),
-              ),
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Icon(
+                  icon,
+                  size: 24,
+                  color: isActive
+                      ? activeColor
+                      : Colors.white.withValues(alpha: 0.6),
+                ),
+                if (badgeCount > 0)
+                  Positioned(
+                    top: -6,
+                    right: -8,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 5, vertical: 1),
+                      constraints: const BoxConstraints(minWidth: 18),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE53935),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: const Color(0xFF1B4332),
+                          width: 1.5,
+                        ),
+                      ),
+                      child: Text(
+                        badgeCount > 99 ? '99+' : '$badgeCount',
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.inter(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                          height: 1.3,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
             ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
-                color: isActive
-                    ? activeColor
-                    : Colors.white.withOpacity(0.6),
+            AnimatedSize(
+              duration: const Duration(milliseconds: 350),
+              curve: Curves.easeOutCubic,
+              alignment: Alignment.centerLeft,
+              child: AnimatedOpacity(
+                opacity: isActive ? 1.0 : 0.0,
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeIn,
+                child: SizedBox(
+                  width: isActive ? null : 0,
+                  child: Padding(
+                    padding: isActive
+                        ? const EdgeInsets.only(left: 8)
+                        : EdgeInsets.zero,
+                    child: Text(
+                      label,
+                      style: TextStyle(
+                        color: activeColor,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.3,
+                      ),
+                      maxLines: 1,
+                    ),
+                  ),
+                ),
               ),
             ),
           ],
