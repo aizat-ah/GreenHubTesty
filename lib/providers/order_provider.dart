@@ -1,44 +1,42 @@
+// lib/providers/order_provider.dart
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
+import 'package:greenhub/models/user_models.dart';
 import '../services/order_service.dart';
 import '../services/whatsapp_service.dart';
 import '../models/order_model.dart';
-import '../models/user_models.dart';
 import 'auth_provider.dart';
 import 'cart_provider.dart';
- 
+
 final orderServiceProvider = Provider<OrderService>((ref) => OrderService());
- 
-// Customer's own orders stream
+
+// Buyer's own orders stream
 final myOrdersProvider = StreamProvider<List<OrderModel>>((ref) {
   final userAsync = ref.watch(currentUserProvider);
-  return userAsync.when(
-    data: (user) => user != null
-        ? ref.watch(orderServiceProvider).customerOrdersStream(user.uid)
-        : Stream.value([]),
-    loading: () => Stream.value([]),
-    error: (_, __) => Stream.value([]),
-  );
+  final user = userAsync.whenData((data) => data).value;
+  if (user == null) return Stream.value([]);
+  return ref.watch(orderServiceProvider).buyerOrdersStream(user.uid);
 });
- 
+
 // Place order notifier
 class PlaceOrderNotifier extends StateNotifier<AsyncValue<OrderModel?>> {
   final OrderService _orderService;
   final Ref _ref;
- 
+
   PlaceOrderNotifier(this._orderService, this._ref)
       : super(const AsyncValue.data(null));
- 
+
   Future<OrderModel?> placeOrder({
     required UserModel user,
     required String note,
   }) async {
     state = const AsyncValue.loading();
- 
+
     try {
       final cartItems = _ref.read(cartItemsProvider);
       if (cartItems.isEmpty) throw Exception('Your cart is empty.');
- 
+
       final orderItems = cartItems
           .map((ci) => OrderItem(
                 productId: ci.product.id,
@@ -48,10 +46,10 @@ class PlaceOrderNotifier extends StateNotifier<AsyncValue<OrderModel?>> {
                 price: ci.product.price,
               ))
           .toList();
- 
+
       final totalPrice =
           cartItems.fold(0.0, (sum, ci) => sum + ci.subtotal);
- 
+
       final order = OrderModel(
         id: '', // will be set after Firestore creates the doc
         customerId: user.uid,
@@ -63,12 +61,12 @@ class PlaceOrderNotifier extends StateNotifier<AsyncValue<OrderModel?>> {
         note: note.trim(),
         createdAt: DateTime.now(),
       );
- 
+
       final placed = await _orderService.placeOrder(order);
- 
+
       // Clear cart after successful order
       _ref.read(cartProvider.notifier).clearCart();
- 
+
       state = AsyncValue.data(placed);
       return placed;
     } catch (e, st) {
@@ -79,7 +77,7 @@ class PlaceOrderNotifier extends StateNotifier<AsyncValue<OrderModel?>> {
 
   void reset() => state = const AsyncValue.data(null);
 }
- 
+
 final placeOrderProvider =
     StateNotifierProvider<PlaceOrderNotifier, AsyncValue<OrderModel?>>(
   (ref) => PlaceOrderNotifier(ref.watch(orderServiceProvider), ref),

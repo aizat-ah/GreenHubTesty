@@ -168,7 +168,7 @@ class ProductListScreen extends ConsumerWidget {
                       ref.read(selectedCategoryProvider.notifier).state = cat,
                 ),
                 loading: () => const SizedBox(height: 38),
-                error: (_, __) => const SizedBox.shrink(),
+                error: (_, _) => const SizedBox.shrink(),
               ),
             ),
  
@@ -311,7 +311,7 @@ class _LoadingGrid extends StatelessWidget {
           mainAxisSpacing: 12,
           childAspectRatio: 0.72,
         ),
-        itemBuilder: (_, __) => Container(
+        itemBuilder: (_, _) => Container(
           decoration: BoxDecoration(
             color: const Color(0xFFEEF3EC),
             borderRadius: BorderRadius.circular(16),
