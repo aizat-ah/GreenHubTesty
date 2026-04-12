@@ -96,15 +96,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: SvgPicture.asset(
-                          'assets/logo/logo_horizontal_light.svg',
-                          height: 38,
-                          fit: BoxFit.contain,
-                        ),
+                    Align(
+                      alignment: Alignment.center,
+                      child: SvgPicture.asset(
+                        'assets/logo/logo_horizontal_dark.svg',
+                        height: 64,
+                        fit: BoxFit.contain,
+                        allowDrawingOutsideViewBox: true,
                       ),
                     ),
                     const SizedBox(height: 16),
