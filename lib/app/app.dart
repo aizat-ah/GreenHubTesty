@@ -12,7 +12,7 @@ class GreenHub extends ConsumerWidget {
  
     return MaterialApp.router(
       title: 'GreenHub',
-      theme: AppTheme.lightTheme,
+      theme: AppTheme.theme,
       routerConfig: router,
       debugShowCheckedModeBanner: false,
     );

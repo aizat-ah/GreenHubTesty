@@ -1,181 +1,285 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/order_model.dart';
-import '../../services/whatsapp_service.dart';
 
-class OrderSuccessScreen extends ConsumerWidget {
+class OrderSuccessScreen extends StatefulWidget {
   final OrderModel order;
 
   const OrderSuccessScreen({super.key, required this.order});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  State<OrderSuccessScreen> createState() => _OrderSuccessScreenState();
+}
+
+class _OrderSuccessScreenState extends State<OrderSuccessScreen>
+    with TickerProviderStateMixin {
+  late final AnimationController _checkController;
+  late final AnimationController _contentController;
+  late final Animation<double> _checkScale;
+  late final Animation<double> _checkOpacity;
+  late final Animation<double> _contentFade;
+  late final Animation<Offset> _contentSlide;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+    _contentController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
+
+    _checkScale = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _checkController, curve: Curves.elasticOut),
+    );
+    _checkOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _checkController,
+        curve: const Interval(0.0, 0.4, curve: Curves.easeOut),
+      ),
+    );
+    _contentFade = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _contentController, curve: Curves.easeOut),
+    );
+    _contentSlide = Tween<Offset>(
+      begin: const Offset(0, 0.15),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(parent: _contentController, curve: Curves.easeOutCubic),
+    );
+
+    _startAnimation();
+  }
+
+  Future<void> _startAnimation() async {
+    await Future.delayed(const Duration(milliseconds: 200));
+    _checkController.forward();
+    await Future.delayed(const Duration(milliseconds: 500));
+    _contentController.forward();
+  }
+
+  @override
+  void dispose() {
+    _checkController.dispose();
+    _contentController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final order = widget.order;
+
     return Scaffold(
-      backgroundColor: AppTheme.background,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            children: [
-              const Spacer(),
+      body: Container(
+        width: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFFE8F5E9), AppTheme.background],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 28),
+            child: Column(
+              children: [
+                const Spacer(flex: 2),
 
-              // Success icon
-              Container(
-                width: 100,
-                height: 100,
-                decoration: BoxDecoration(
-                  color: AppTheme.primary.withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.check_circle_rounded,
-                  color: AppTheme.primary,
-                  size: 60,
-                ),
-              ),
-              const SizedBox(height: 24),
-
-              const Text(
-                'Order Placed! 🎉',
-                style: TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.w800,
-                  color: AppTheme.textDark,
-                ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                'Order #${order.id.substring(0, 8).toUpperCase()}',
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: AppTheme.textLight,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 32),
-
-              // Order summary card
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  color: AppTheme.surface,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppTheme.divider),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ...order.items.map((item) => Padding(
-                          padding: const EdgeInsets.only(bottom: 6),
-                          child: Row(
-                            children: [
-                              const Icon(Icons.eco_rounded,
-                                  size: 14, color: AppTheme.primaryLight),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  '${item.productName} × ${item.quantity} ${item.unit}',
-                                  style: const TextStyle(
-                                      fontSize: 13, color: AppTheme.textDark),
-                                ),
-                              ),
-                              Text(
-                                item.formattedSubtotal,
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppTheme.textDark,
-                                ),
+                // Animated check
+                AnimatedBuilder(
+                  animation: _checkController,
+                  builder: (context, child) {
+                    return Opacity(
+                      opacity: _checkOpacity.value,
+                      child: Transform.scale(
+                        scale: _checkScale.value,
+                        child: Container(
+                          width: 110,
+                          height: 110,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: AppTheme.primaryGradient,
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppTheme.primary.withOpacity(0.3),
+                                blurRadius: 30,
+                                offset: const Offset(0, 10),
                               ),
                             ],
                           ),
-                        )),
-                    const Divider(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'Total',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w800,
-                            fontSize: 15,
-                            color: AppTheme.textDark,
+                          child: const Icon(
+                            Icons.check_rounded,
+                            size: 56,
+                            color: Colors.white,
                           ),
                         ),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 28),
+
+                // Content
+                FadeTransition(
+                  opacity: _contentFade,
+                  child: SlideTransition(
+                    position: _contentSlide,
+                    child: Column(
+                      children: [
                         Text(
-                          order.formattedTotal,
-                          style: const TextStyle(
+                          'Order Placed! 🎉',
+                          style: GoogleFonts.poppins(
+                            fontSize: 26,
                             fontWeight: FontWeight.w800,
-                            fontSize: 16,
-                            color: AppTheme.primary,
+                            color: AppTheme.textDark,
+                            letterSpacing: -0.3,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Your order has been placed successfully.\nThe supplier will contact you shortly.',
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.inter(
+                            fontSize: 14,
+                            color: AppTheme.textMid,
+                            height: 1.6,
+                          ),
+                        ),
+                        const SizedBox(height: 28),
+
+                        // Order details card
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(20),
+                          decoration: AppTheme.cardDecoration,
+                          child: Column(
+                            children: [
+                              _DetailRow(
+                                label: 'Order ID',
+                                value:
+                                    '#${order.id.substring(0, 8).toUpperCase()}',
+                                isHighlighted: true,
+                              ),
+                              const SizedBox(height: 12),
+                              _DetailRow(
+                                label: 'Items',
+                                value:
+                                    '${order.totalItems} item${order.totalItems > 1 ? 's' : ''}',
+                              ),
+                              const SizedBox(height: 12),
+                              _DetailRow(
+                                label: 'Total',
+                                value: order.formattedTotal,
+                                isHighlighted: true,
+                              ),
+                            ],
                           ),
                         ),
                       ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: 16),
 
-              // Info text
-              const Text(
-                'Tap the button below to send your order details to the seller via WhatsApp to arrange delivery and payment.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppTheme.textMid,
-                  height: 1.5,
-                ),
-              ),
+                const Spacer(flex: 2),
 
-              const Spacer(),
-
-              // WhatsApp button
-              ElevatedButton.icon(
-                onPressed: () async {
-                  final sent =
-                      await WhatsAppService.sendOrderToSeller(order);
-                  if (!sent && context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                            'Could not open WhatsApp. Please contact the seller manually.'),
+                // Buttons
+                FadeTransition(
+                  opacity: _contentFade,
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        width: double.infinity,
+                        height: 54,
+                        child: ElevatedButton(
+                          onPressed: () => context.go('/orders'),
+                          style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                          child: Text(
+                            'View My Orders',
+                            style: GoogleFonts.poppins(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
                       ),
-                    );
-                  }
-                },
-                icon: const Text('📲', style: TextStyle(fontSize: 18)),
-                label: const Text('Send Order via WhatsApp'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF25D366), // WhatsApp green
-                  foregroundColor: Colors.white,
+                      const SizedBox(height: 12),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 54,
+                        child: OutlinedButton(
+                          onPressed: () => context.go('/home'),
+                          style: OutlinedButton.styleFrom(
+                            side: const BorderSide(
+                                color: AppTheme.divider, width: 1.5),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                          child: Text(
+                            'Continue Shopping',
+                            style: GoogleFonts.poppins(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              color: AppTheme.textMid,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: 12),
-
-              // View orders button
-              OutlinedButton(
-                onPressed: () => context.go('/orders'),
-                child: const Text('View My Orders'),
-              ),
-              const SizedBox(height: 12),
-
-              // Continue shopping
-              TextButton(
-                onPressed: () => context.go('/home'),
-                child: const Text(
-                  'Continue Shopping',
-                  style: TextStyle(color: AppTheme.textMid),
-                ),
-              ),
-              const SizedBox(height: 8),
-            ],
+                const SizedBox(height: 32),
+              ],
+            ),
           ),
         ),
       ),
+    );
+  }
+}
+
+class _DetailRow extends StatelessWidget {
+  final String label;
+  final String value;
+  final bool isHighlighted;
+
+  const _DetailRow({
+    required this.label,
+    required this.value,
+    this.isHighlighted = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Text(
+          label,
+          style: GoogleFonts.inter(
+            fontSize: 13,
+            color: AppTheme.textLight,
+          ),
+        ),
+        const Spacer(),
+        Text(
+          value,
+          style: GoogleFonts.poppins(
+            fontSize: isHighlighted ? 15 : 14,
+            fontWeight: isHighlighted ? FontWeight.w700 : FontWeight.w600,
+            color: isHighlighted ? AppTheme.primary : AppTheme.textDark,
+          ),
+        ),
+      ],
     );
   }
 }

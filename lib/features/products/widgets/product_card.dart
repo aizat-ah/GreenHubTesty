@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../models/product_model.dart';
 import '../../../core/theme/app_theme.dart';
- 
+
 class ProductCard extends StatelessWidget {
   final ProductModel product;
   final VoidCallback? onTap;
   final VoidCallback? onAddToCart;
- 
+
   const ProductCard({
     super.key,
     required this.product,
     this.onTap,
     this.onAddToCart,
   });
- 
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -22,8 +23,8 @@ class ProductCard extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: AppTheme.surface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppTheme.divider),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: AppTheme.cardShadow,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -32,62 +33,86 @@ class ProductCard extends StatelessWidget {
             Expanded(
               child: ClipRRect(
                 borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(16)),
+                    const BorderRadius.vertical(top: Radius.circular(20)),
                 child: SizedBox.expand(
-                  child: product.imageUrl.isNotEmpty
-                      ? CachedNetworkImage(
-                          imageUrl: product.imageUrl,
-                          width: double.infinity,
-                          height: double.infinity,
-                          fit: BoxFit.cover,
-                          placeholder: (context, url) => _imagePlaceholder(),
-                          errorWidget: (context, url, error) =>
-                              _imagePlaceholder(),
-                        )
-                      : _imagePlaceholder(),
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      product.imageUrl.isNotEmpty
+                          ? CachedNetworkImage(
+                              imageUrl: product.imageUrl,
+                              fit: BoxFit.cover,
+                              placeholder: (_, __) => _imagePlaceholder(),
+                              errorWidget: (_, __, ___) =>
+                                  _imagePlaceholder(),
+                            )
+                          : _imagePlaceholder(),
+                      // Gradient scrim at bottom
+                      Positioned(
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        height: 40,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.transparent,
+                                Colors.black.withOpacity(0.05),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      // Category pill
+                      Positioned(
+                        top: 8,
+                        left: 8,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.92),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            product.category,
+                            style: GoogleFonts.inter(
+                              fontSize: 10,
+                              color: AppTheme.primary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
- 
+
             // Info
             Padding(
-              padding: const EdgeInsets.fromLTRB(10, 10, 10, 8),
+              padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Category chip
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 8, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: AppTheme.primary.withOpacity(0.08),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      product.category,
-                      style: const TextStyle(
-                        fontSize: 10,
-                        color: AppTheme.primary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 6),
- 
                   // Name
                   Text(
                     product.name,
-                    style: const TextStyle(
+                    style: GoogleFonts.poppins(
                       fontSize: 13,
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w600,
                       color: AppTheme.textDark,
                     ),
-                    maxLines: 2,
+                    maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 4),
- 
-                  // Price + add button row
+                  const SizedBox(height: 6),
+
+                  // Price + add button
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -97,15 +122,15 @@ class ProductCard extends StatelessWidget {
                           children: [
                             Text(
                               product.formattedPrice,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w800,
+                              style: GoogleFonts.poppins(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w700,
                                 color: AppTheme.primary,
                               ),
                             ),
                             Text(
                               '/ ${product.unit}',
-                              style: const TextStyle(
+                              style: GoogleFonts.inter(
                                 fontSize: 11,
                                 color: AppTheme.textLight,
                               ),
@@ -113,17 +138,24 @@ class ProductCard extends StatelessWidget {
                           ],
                         ),
                       ),
- 
-                      // Add to cart button
+
+                      // Add to cart
                       if (product.isInStock)
                         GestureDetector(
                           onTap: onAddToCart,
                           child: Container(
-                            width: 32,
-                            height: 32,
+                            width: 34,
+                            height: 34,
                             decoration: BoxDecoration(
-                              color: AppTheme.primary,
-                              borderRadius: BorderRadius.circular(10),
+                              gradient: AppTheme.primaryGradient,
+                              borderRadius: BorderRadius.circular(11),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppTheme.primary.withOpacity(0.3),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ],
                             ),
                             child: const Icon(
                               Icons.add_rounded,
@@ -137,12 +169,12 @@ class ProductCard extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
-                            color: AppTheme.divider,
+                            color: AppTheme.surfaceDim,
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: const Text(
+                          child: Text(
                             'Out',
-                            style: TextStyle(
+                            style: GoogleFonts.inter(
                               fontSize: 11,
                               color: AppTheme.textLight,
                               fontWeight: FontWeight.w600,
@@ -159,7 +191,7 @@ class ProductCard extends StatelessWidget {
       ),
     );
   }
- 
+
   Widget _imagePlaceholder() {
     return Container(
       color: const Color(0xFFEEF3EC),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_theme.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/cart_provider.dart';
@@ -56,260 +57,270 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     return Scaffold(
       backgroundColor: AppTheme.background,
       appBar: AppBar(
-        title: const Text('Checkout'),
+        title: Text(
+          'Checkout',
+          style: GoogleFonts.poppins(
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_rounded),
           onPressed: () => context.pop(),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Customer info card
-            _SectionCard(
-              title: 'Your Details',
+      body: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _InfoRow(
-                    icon: Icons.person_outline,
-                    label: 'Name',
-                    value: user?.name ?? '—',
-                  ),
-                  const Divider(height: 20),
-                  _InfoRow(
-                    icon: Icons.phone_outlined,
-                    label: 'WhatsApp',
-                    value: user?.phone ?? '—',
-                  ),
-                  const Divider(height: 20),
-                  _InfoRow(
-                    icon: Icons.email_outlined,
-                    label: 'Email',
-                    value: user?.email ?? '—',
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Order items
-            _SectionCard(
-              title: 'Order Items',
-              child: Column(
-                children: [
-                  ...cartItems.asMap().entries.map((entry) {
-                    final i = entry.key;
-                    final item = entry.value;
-                    return Column(
+                  // Customer info
+                  _SectionCard(
+                    icon: Icons.person_outline_rounded,
+                    title: 'Your Details',
+                    child: Column(
                       children: [
-                        if (i > 0) const Divider(height: 16),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                        _InfoRow(
+                          icon: Icons.person_outline,
+                          label: 'Name',
+                          value: user?.name ?? '—',
+                        ),
+                        _divider(),
+                        _InfoRow(
+                          icon: Icons.phone_outlined,
+                          label: 'WhatsApp',
+                          value: user?.phone ?? '—',
+                        ),
+                        _divider(),
+                        _InfoRow(
+                          icon: Icons.email_outlined,
+                          label: 'Email',
+                          value: user?.email ?? '—',
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Order items
+                  _SectionCard(
+                    icon: Icons.receipt_long_rounded,
+                    title: 'Order Summary',
+                    child: Column(
+                      children: [
+                        ...cartItems.asMap().entries.map((entry) {
+                          final i = entry.key;
+                          final item = entry.value;
+                          return Column(
+                            children: [
+                              if (i > 0) _divider(),
+                              Row(
                                 children: [
-                                  Text(
-                                    item.product.name,
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                      color: AppTheme.textDark,
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          item.product.name,
+                                          style: GoogleFonts.poppins(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w600,
+                                            color: AppTheme.textDark,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          '${item.quantity} × ${item.product.formattedPrice} / ${item.product.unit}',
+                                          style: GoogleFonts.inter(
+                                            fontSize: 12,
+                                            color: AppTheme.textLight,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                   Text(
-                                    '${item.product.formattedPrice} / ${item.product.unit} × ${item.quantity}',
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      color: AppTheme.textLight,
+                                    'RM ${item.subtotal.toStringAsFixed(2)}',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                      color: AppTheme.textDark,
                                     ),
                                   ),
                                 ],
                               ),
-                            ),
-                            Text(
-                              'RM ${item.subtotal.toStringAsFixed(2)}',
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w700,
-                                color: AppTheme.textDark,
+                            ],
+                          );
+                        }),
+                        const SizedBox(height: 14),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 12, horizontal: 14),
+                          decoration: BoxDecoration(
+                            color: AppTheme.primary.withOpacity(0.06),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            children: [
+                              Text(
+                                'Total',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppTheme.primary,
+                                ),
                               ),
-                            ),
-                          ],
+                              const Spacer(),
+                              Text(
+                                'RM ${total.toStringAsFixed(2)}',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w800,
+                                  color: AppTheme.primary,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
-                    );
-                  }),
-                  const Divider(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Total',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w800,
-                          color: AppTheme.textDark,
-                        ),
-                      ),
-                      Text(
-                        'RM ${total.toStringAsFixed(2)}',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w800,
-                          color: AppTheme.primary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Payment method
-            _SectionCard(
-              title: 'Payment Method',
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: AppTheme.primary.withOpacity(0.08),
-                      borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Icon(Icons.payments_outlined,
-                        color: AppTheme.primary, size: 22),
                   ),
-                  const SizedBox(width: 12),
-                  const Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Cash on Delivery',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          color: AppTheme.textDark,
+                  const SizedBox(height: 16),
+
+                  // Notes
+                  _SectionCard(
+                    icon: Icons.edit_note_rounded,
+                    title: 'Order Notes',
+                    child: TextFormField(
+                      controller: _noteController,
+                      maxLines: 3,
+                      maxLength: 200,
+                      decoration: InputDecoration(
+                        hintText: 'e.g. Please pack separately, deliver after 3pm',
+                        hintStyle: GoogleFonts.inter(
+                          fontSize: 13,
+                          color: AppTheme.textLight,
+                        ),
+                        counterStyle: GoogleFonts.inter(
+                          fontSize: 11,
+                          color: AppTheme.textLight,
                         ),
                       ),
-                      Text(
-                        'Pay when you receive your order',
-                        style:
-                            TextStyle(fontSize: 12, color: AppTheme.textLight),
-                      ),
-                    ],
+                    ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+          ),
 
-            // Note field
-            _SectionCard(
-              title: 'Note to Seller (Optional)',
-              child: TextField(
-                controller: _noteController,
-                maxLines: 3,
-                maxLength: 200,
-                decoration: const InputDecoration(
-                  hintText:
-                      'e.g. Please call before delivery, preferred time, etc.',
-                  border: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  filled: false,
-                  contentPadding: EdgeInsets.zero,
-                  counterStyle: TextStyle(fontSize: 11, color: AppTheme.textLight),
+          // Place order button
+          Container(
+            padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+            decoration: BoxDecoration(
+              color: AppTheme.surface,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.06),
+                  blurRadius: 16,
+                  offset: const Offset(0, -4),
                 ),
-              ),
+              ],
             ),
-            const SizedBox(height: 16),
-
-            // WhatsApp notice
-            Container(
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: const Color(0xFFE8F5E9),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFFA5D6A7)),
-              ),
-              child: const Row(
-                children: [
-                  Text('📲', style: TextStyle(fontSize: 20)),
-                  SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      'After placing your order, you\'ll be redirected to WhatsApp to confirm with the seller.',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Color(0xFF2E7D32),
-                        height: 1.4,
-                      ),
-                    ),
+            child: SizedBox(
+              width: double.infinity,
+              height: 54,
+              child: ElevatedButton(
+                onPressed: isLoading ? null : _placeOrder,
+                style: ElevatedButton.styleFrom(
+                  disabledBackgroundColor: AppTheme.primary.withOpacity(0.6),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
                   ),
-                ],
+                ),
+                child: isLoading
+                    ? const SizedBox(
+                        width: 22,
+                        height: 22,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.5,
+                          color: Colors.white,
+                        ),
+                      )
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Place Order — RM ${total.toStringAsFixed(2)}',
+                            style: GoogleFonts.poppins(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
               ),
             ),
-            const SizedBox(height: 28),
-
-            // Place order button
-            ElevatedButton(
-              onPressed: isLoading ? null : _placeOrder,
-              child: isLoading
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(
-                          color: Colors.white, strokeWidth: 2),
-                    )
-                  : const Text('Place Order'),
-            ),
-            const SizedBox(height: 16),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
+
+  Widget _divider() => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        child: Divider(color: AppTheme.divider.withOpacity(0.6), height: 1),
+      );
 }
 
+// ─── Section card ─────────────────────────────────────────────────────────────
+
 class _SectionCard extends StatelessWidget {
+  final IconData icon;
   final String title;
   final Widget child;
 
-  const _SectionCard({required this.title, required this.child});
+  const _SectionCard({
+    required this.icon,
+    required this.title,
+    required this.child,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppTheme.surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppTheme.divider),
-      ),
+      padding: const EdgeInsets.all(18),
+      decoration: AppTheme.cardDecoration,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-              color: AppTheme.textLight,
-              letterSpacing: 0.5,
-            ),
+          Row(
+            children: [
+              Icon(icon, size: 18, color: AppTheme.primary),
+              const SizedBox(width: 8),
+              Text(
+                title,
+                style: GoogleFonts.poppins(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.textDark,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 14),
           child,
         ],
       ),
     );
   }
 }
+
+// ─── Info row ─────────────────────────────────────────────────────────────────
 
 class _InfoRow extends StatelessWidget {
   final IconData icon;
@@ -326,22 +337,26 @@ class _InfoRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 18, color: AppTheme.textLight),
+        Icon(icon, size: 16, color: AppTheme.textLight),
         const SizedBox(width: 10),
-        Text(
-          '$label: ',
-          style:
-              const TextStyle(fontSize: 13, color: AppTheme.textLight),
+        SizedBox(
+          width: 70,
+          child: Text(
+            label,
+            style: GoogleFonts.inter(
+              fontSize: 13,
+              color: AppTheme.textLight,
+            ),
+          ),
         ),
         Expanded(
           child: Text(
             value,
-            style: const TextStyle(
-              fontSize: 13,
+            style: GoogleFonts.inter(
+              fontSize: 14,
               fontWeight: FontWeight.w600,
               color: AppTheme.textDark,
             ),
-            overflow: TextOverflow.ellipsis,
           ),
         ),
       ],

@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/product_model.dart';
 import '../../providers/product_provider.dart';
+import '../../services/product_service.dart';
 import 'product_form_sheet.dart';
 
 class ManageProductsScreen extends ConsumerWidget {
@@ -17,7 +19,13 @@ class ManageProductsScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppTheme.background,
       appBar: AppBar(
-        title: const Text('Manage Products'),
+        title: Text(
+          'Manage Products',
+          style: GoogleFonts.poppins(
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_rounded),
           onPressed: () => context.pop(),
@@ -28,10 +36,14 @@ class ManageProductsScreen extends ConsumerWidget {
         backgroundColor: AppTheme.primary,
         foregroundColor: Colors.white,
         icon: const Icon(Icons.add_rounded),
-        label: const Text(
+        label: Text(
           'Add Product',
-          style: TextStyle(fontWeight: FontWeight.w700),
+          style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
         ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        elevation: 4,
       ),
       body: productsAsync.when(
         data: (products) {
@@ -40,24 +52,35 @@ class ManageProductsScreen extends ConsumerWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(
-                    Icons.eco_rounded,
-                    size: 64,
-                    color: AppTheme.primaryLight,
+                  Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      color: AppTheme.surfaceDim,
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    child: Icon(
+                      Icons.eco_rounded,
+                      size: 40,
+                      color: AppTheme.textLight.withOpacity(0.4),
+                    ),
                   ),
-                  const SizedBox(height: 16),
-                  const Text(
+                  const SizedBox(height: 18),
+                  Text(
                     'No products yet',
-                    style: TextStyle(
+                    style: GoogleFonts.poppins(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
                       color: AppTheme.textDark,
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  const Text(
+                  const SizedBox(height: 6),
+                  Text(
                     'Tap the button below to add your first product',
-                    style: TextStyle(color: AppTheme.textMid),
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      color: AppTheme.textLight,
+                    ),
                   ),
                 ],
               ),
@@ -82,14 +105,34 @@ class ManageProductsScreen extends ConsumerWidget {
                 children: [
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),
-                    child: Text(
-                      cat,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                        color: AppTheme.textLight,
-                        letterSpacing: 0.5,
-                      ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: AppTheme.primary.withOpacity(0.08),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            cat,
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: AppTheme.primary,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          '${items.length}',
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            color: AppTheme.textLight,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   ...items.map(
@@ -131,15 +174,28 @@ class ManageProductsScreen extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Delete Product'),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: Text(
+          'Delete Product',
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.w700,
+            color: AppTheme.textDark,
+          ),
+        ),
         content: Text(
           'Remove "${product.name}" from your store? This cannot be undone.',
+          style: GoogleFonts.inter(
+            color: AppTheme.textMid,
+            height: 1.5,
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
+            child: Text(
+              'Cancel',
+              style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+            ),
           ),
           TextButton(
             onPressed: () async {
@@ -151,9 +207,12 @@ class ManageProductsScreen extends ConsumerWidget {
                 );
               }
             },
-            child: const Text(
+            child: Text(
               'Delete',
-              style: TextStyle(color: AppTheme.error),
+              style: GoogleFonts.inter(
+                fontWeight: FontWeight.w600,
+                color: AppTheme.error,
+              ),
             ),
           ),
         ],
@@ -180,32 +239,28 @@ class _ProductTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 10),
+      margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: product.isAvailable ? AppTheme.surface : const Color(0xFFF7F7F7),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: product.isAvailable
-              ? AppTheme.divider
-              : const Color(0xFFE0E0E0),
-        ),
+        color: product.isAvailable ? AppTheme.surface : AppTheme.surfaceDim,
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: product.isAvailable ? AppTheme.cardShadow : [],
       ),
       child: Row(
         children: [
           // Product image
           ClipRRect(
             borderRadius: const BorderRadius.horizontal(
-              left: Radius.circular(13),
+              left: Radius.circular(18),
             ),
             child: SizedBox(
-              width: 72,
-              height: 72,
+              width: 76,
+              height: 76,
               child: product.imageUrl.isNotEmpty
                   ? CachedNetworkImage(
                       imageUrl: product.imageUrl,
                       fit: BoxFit.cover,
-                      placeholder: (_, _) => _placeholder(),
-                      errorWidget: (_, _, _) => _placeholder(),
+                      placeholder: (_, __) => _placeholder(),
+                      errorWidget: (_, __, ___) => _placeholder(),
                     )
                   : _placeholder(),
             ),
@@ -214,7 +269,8 @@ class _ProductTile extends StatelessWidget {
           // Info
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -223,9 +279,9 @@ class _ProductTile extends StatelessWidget {
                       Expanded(
                         child: Text(
                           product.name,
-                          style: TextStyle(
+                          style: GoogleFonts.poppins(
                             fontSize: 14,
-                            fontWeight: FontWeight.w700,
+                            fontWeight: FontWeight.w600,
                             color: product.isAvailable
                                 ? AppTheme.textDark
                                 : AppTheme.textLight,
@@ -235,16 +291,16 @@ class _ProductTile extends StatelessWidget {
                       if (!product.isAvailable)
                         Container(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 6,
+                            horizontal: 7,
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFEEEEEE),
+                            color: AppTheme.textLight.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(6),
                           ),
-                          child: const Text(
+                          child: Text(
                             'Hidden',
-                            style: TextStyle(
+                            style: GoogleFonts.inter(
                               fontSize: 10,
                               color: AppTheme.textLight,
                               fontWeight: FontWeight.w600,
@@ -253,10 +309,10 @@ class _ProductTile extends StatelessWidget {
                         ),
                     ],
                   ),
-                  const SizedBox(height: 3),
+                  const SizedBox(height: 4),
                   Text(
                     '${product.formattedPrice} / ${product.unit}  ·  Stock: ${product.stock}',
-                    style: const TextStyle(
+                    style: GoogleFonts.inter(
                       fontSize: 12,
                       color: AppTheme.textMid,
                     ),
@@ -270,16 +326,13 @@ class _ProductTile extends StatelessWidget {
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Available toggle
               Transform.scale(
                 scale: 0.8,
                 child: Switch(
                   value: product.isAvailable,
                   onChanged: onToggle,
-                  activeThumbColor: AppTheme.primary,
                 ),
               ),
-              // Edit + delete row
               Row(
                 children: [
                   IconButton(

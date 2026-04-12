@@ -10,19 +10,19 @@ import '../../models/order_model.dart';
 import '../../providers/order_provider.dart';
 import '../../services/order_service.dart';
 
-// Admin all-orders stream provider
-final adminOrdersProvider = StreamProvider<List<OrderModel>>((ref) {
+// Supplier all-orders stream provider
+final supplierOrdersProvider = StreamProvider<List<OrderModel>>((ref) {
   return ref.watch(orderServiceProvider).allOrdersStream();
 });
 
 // Selected status filter (null = all)
-final adminOrderFilterProvider = StateProvider<OrderStatus?>((ref) => null);
+final supplierOrderFilterProvider = StateProvider<OrderStatus?>((ref) => null);
 
-// Filtered admin orders
-final filteredAdminOrdersProvider =
+// Filtered supplier orders
+final filteredSupplierOrdersProvider =
     Provider<AsyncValue<List<OrderModel>>>((ref) {
-  final ordersAsync = ref.watch(adminOrdersProvider);
-  final filter = ref.watch(adminOrderFilterProvider);
+  final ordersAsync = ref.watch(supplierOrdersProvider);
+  final filter = ref.watch(supplierOrderFilterProvider);
 
   return ordersAsync.whenData((orders) {
     if (filter == null) return orders;
@@ -30,19 +30,19 @@ final filteredAdminOrdersProvider =
   });
 });
 
-class AdminOrdersScreen extends ConsumerWidget {
-  const AdminOrdersScreen({super.key});
+class SupplierOrdersScreen extends ConsumerWidget {
+  const SupplierOrdersScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ordersAsync = ref.watch(filteredAdminOrdersProvider);
-    final allOrdersAsync = ref.watch(adminOrdersProvider);
-    final selectedFilter = ref.watch(adminOrderFilterProvider);
+    final ordersAsync = ref.watch(filteredSupplierOrdersProvider);
+    final allOrdersAsync = ref.watch(supplierOrdersProvider);
+    final selectedFilter = ref.watch(supplierOrderFilterProvider);
     return Scaffold(
       backgroundColor: AppTheme.background,
       appBar: AppBar(
         title: Text(
-          'All Orders',
+          'Buyer Orders',
           style: GoogleFonts.poppins(
             fontSize: 20,
             fontWeight: FontWeight.w700,
@@ -88,7 +88,7 @@ class AdminOrdersScreen extends ConsumerWidget {
           _StatusFilterBar(
             selected: selectedFilter,
             onSelected: (status) =>
-                ref.read(adminOrderFilterProvider.notifier).state = status,
+                ref.read(supplierOrderFilterProvider.notifier).state = status,
             allOrders: allOrdersAsync.maybeWhen(
               data: (orders) => orders,
               orElse: () => [],
@@ -125,7 +125,7 @@ class AdminOrdersScreen extends ConsumerWidget {
   }
 }
 
-// â”€â”€â”€ Status filter bar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Status filter bar ────────────────────────────────────────────────────────
 
 class _StatusFilterBar extends StatelessWidget {
   final OrderStatus? selected;
@@ -155,10 +155,10 @@ class _StatusFilterBar extends StatelessWidget {
 
     final labels = {
       null: 'All',
-      OrderStatus.pending: 'ðŸ• Pending',
-      OrderStatus.confirmed: 'âœ… Confirmed',
-      OrderStatus.completed: 'ðŸŽ‰ Done',
-      OrderStatus.cancelled: 'âŒ Cancelled',
+      OrderStatus.pending: '🕐 Pending',
+      OrderStatus.confirmed: '✅ Confirmed',
+      OrderStatus.completed: '🎉 Done',
+      OrderStatus.cancelled: '❌ Cancelled',
     };
 
     return SizedBox(
@@ -237,7 +237,7 @@ class _StatusFilterBar extends StatelessWidget {
   }
 }
 
-// â”€â”€â”€ Admin order card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Admin order card ─────────────────────────────────────────────────────────
 
 class _AdminOrderCard extends ConsumerWidget {
   final OrderModel order;
@@ -354,7 +354,7 @@ class _AdminOrderCard extends ConsumerWidget {
                           const SizedBox(width: 6),
                           Expanded(
                             child: Text(
-                              '${item.productName} Ã— ${item.quantity} ${item.unit}',
+                              '${item.productName} × ${item.quantity} ${item.unit}',
                               style: GoogleFonts.inter(
                                 fontSize: 13,
                                 color: AppTheme.textMid,
@@ -384,7 +384,7 @@ class _AdminOrderCard extends ConsumerWidget {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('ðŸ“ ',
+                        const Text('📝 ',
                             style: TextStyle(fontSize: 12)),
                         Expanded(
                           child: Text(
@@ -420,7 +420,7 @@ class _AdminOrderCard extends ConsumerWidget {
                 ),
                 const Spacer(),
                 _ActionButton(
-                  icon: 'ðŸ“²',
+                  icon: '📲',
                   label: 'Chat',
                   color: const Color(0xFF25D366),
                   onTap: () => _whatsappCustomer(order),
@@ -429,7 +429,7 @@ class _AdminOrderCard extends ConsumerWidget {
                 if (order.status != OrderStatus.completed &&
                     order.status != OrderStatus.cancelled)
                   _ActionButton(
-                    icon: 'âœï¸',
+                    icon: '✏️',
                     label: 'Status',
                     color: AppTheme.primary,
                     onTap: () =>
@@ -469,7 +469,7 @@ class _AdminOrderCard extends ConsumerWidget {
   }
 }
 
-// â”€â”€â”€ Status update bottom sheet â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Status update bottom sheet ───────────────────────────────────────────────
 
 class _StatusUpdateSheet extends ConsumerWidget {
   final OrderModel order;
@@ -602,7 +602,7 @@ class _StatusOption extends StatelessWidget {
   }
 }
 
-// â”€â”€â”€ Shared widgets â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Shared widgets ───────────────────────────────────────────────────────────
 
 class _ActionButton extends StatelessWidget {
   final String icon;

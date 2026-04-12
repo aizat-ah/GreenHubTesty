@@ -22,12 +22,19 @@ class ImageUploadService {
   Future<String> uploadProductImage(File file) async {
     final id = const Uuid().v4();
     final ref = _storage.ref().child('products/$id.jpg');
+    return _upload(file, ref);
+  }
 
+  Future<String> uploadProfilePicture(String uid, File file) async {
+    final ref = _storage.ref().child('profile_pictures/$uid.jpg');
+    return _upload(file, ref);
+  }
+
+  Future<String> _upload(File file, Reference ref) async {
     final task = await ref.putFile(
       file,
       SettableMetadata(contentType: 'image/jpeg'),
     );
-
     return await task.ref.getDownloadURL();
   }
 
