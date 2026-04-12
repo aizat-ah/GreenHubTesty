@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/user_models.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../providers/auth_provider.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
@@ -111,23 +112,18 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen>
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Container(
-                      width: 60,
-                      height: 60,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(18),
-                        border: Border.all(
-                          color: Colors.white.withOpacity(0.2),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: SvgPicture.asset(
+                          'assets/logo/logo_horizontal_light.svg',
+                          height: 36,
+                          fit: BoxFit.contain,
                         ),
                       ),
-                      child: const Icon(
-                        Icons.person_add_rounded,
-                        size: 30,
-                        color: Colors.white,
-                      ),
                     ),
-                    const SizedBox(height: 14),
+                    const SizedBox(height: 16),
                     Text(
                       'Create Account',
                       style: GoogleFonts.poppins(

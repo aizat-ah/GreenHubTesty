@@ -64,8 +64,8 @@ class _ProductDetailSheetState extends State<ProductDetailSheet> {
                               ? CachedNetworkImage(
                                   imageUrl: product.imageUrl,
                                   fit: BoxFit.cover,
-                                  placeholder: (_, __) => _placeholder(),
-                                  errorWidget: (_, __, ___) => _placeholder(),
+                                  placeholder: (_, _) => _placeholder(),
+                                  errorWidget: (_, _, _) => _placeholder(),
                                 )
                               : _placeholder(),
                           // Bottom scrim
@@ -98,7 +98,9 @@ class _ProductDetailSheetState extends State<ProductDetailSheet> {
                     children: [
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 5),
+                          horizontal: 12,
+                          vertical: 5,
+                        ),
                         decoration: BoxDecoration(
                           color: AppTheme.primary.withOpacity(0.08),
                           borderRadius: BorderRadius.circular(20),
@@ -116,7 +118,9 @@ class _ProductDetailSheetState extends State<ProductDetailSheet> {
                       if (!product.isInStock)
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 5),
+                            horizontal: 12,
+                            vertical: 5,
+                          ),
                           decoration: BoxDecoration(
                             color: AppTheme.error.withOpacity(0.08),
                             borderRadius: BorderRadius.circular(20),
@@ -188,8 +192,11 @@ class _ProductDetailSheetState extends State<ProductDetailSheet> {
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.inventory_2_outlined,
-                            size: 18, color: AppTheme.textLight),
+                        const Icon(
+                          Icons.inventory_2_outlined,
+                          size: 18,
+                          color: AppTheme.textLight,
+                        ),
                         const SizedBox(width: 8),
                         Text(
                           'Stock: ${product.stock} ${product.unit}',
@@ -338,10 +345,7 @@ class _ProductDetailSheetState extends State<ProductDetailSheet> {
     );
   }
 
-  Widget _stepperButton({
-    required IconData icon,
-    VoidCallback? onTap,
-  }) {
+  Widget _stepperButton({required IconData icon, VoidCallback? onTap}) {
     return GestureDetector(
       onTap: onTap,
       child: Container(

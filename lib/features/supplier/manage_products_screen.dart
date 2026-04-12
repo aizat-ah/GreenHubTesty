@@ -21,10 +21,7 @@ class ManageProductsScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text(
           'Manage Products',
-          style: GoogleFonts.poppins(
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
-          ),
+          style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w700),
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_rounded),
@@ -40,9 +37,7 @@ class ManageProductsScreen extends ConsumerWidget {
           'Add Product',
           style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
         ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         elevation: 4,
       ),
       body: productsAsync.when(
@@ -109,7 +104,9 @@ class ManageProductsScreen extends ConsumerWidget {
                       children: [
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 4),
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
                             color: AppTheme.primary.withOpacity(0.08),
                             borderRadius: BorderRadius.circular(8),
@@ -184,10 +181,7 @@ class ManageProductsScreen extends ConsumerWidget {
         ),
         content: Text(
           'Remove "${product.name}" from your store? This cannot be undone.',
-          style: GoogleFonts.inter(
-            color: AppTheme.textMid,
-            height: 1.5,
-          ),
+          style: GoogleFonts.inter(color: AppTheme.textMid, height: 1.5),
         ),
         actions: [
           TextButton(
@@ -259,8 +253,8 @@ class _ProductTile extends StatelessWidget {
                   ? CachedNetworkImage(
                       imageUrl: product.imageUrl,
                       fit: BoxFit.cover,
-                      placeholder: (_, __) => _placeholder(),
-                      errorWidget: (_, __, ___) => _placeholder(),
+                      placeholder: (_, _) => _placeholder(),
+                      errorWidget: (_, _, _) => _placeholder(),
                     )
                   : _placeholder(),
             ),
@@ -269,8 +263,7 @@ class _ProductTile extends StatelessWidget {
           // Info
           Expanded(
             child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -328,10 +321,7 @@ class _ProductTile extends StatelessWidget {
             children: [
               Transform.scale(
                 scale: 0.8,
-                child: Switch(
-                  value: product.isAvailable,
-                  onChanged: onToggle,
-                ),
+                child: Switch(value: product.isAvailable, onChanged: onToggle),
               ),
               Row(
                 children: [

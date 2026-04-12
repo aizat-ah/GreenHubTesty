@@ -22,7 +22,7 @@ class _AdminUserFormSheetState extends ConsumerState<AdminUserFormSheet> {
   late TextEditingController _emailController;
   late TextEditingController _phoneController;
   late TextEditingController _passwordController;
-  
+
   UserRole _selectedRole = UserRole.buyer;
   bool _isLoading = false;
   bool _obscurePassword = true;
@@ -35,7 +35,9 @@ class _AdminUserFormSheetState extends ConsumerState<AdminUserFormSheet> {
     _nameController = TextEditingController(text: widget.user?.name ?? '');
     _emailController = TextEditingController(text: widget.user?.email ?? '');
     _phoneController = TextEditingController(text: widget.user?.phone ?? '');
-    _passwordController = TextEditingController(text: _isEditing ? '' : 'GreenHub123!');
+    _passwordController = TextEditingController(
+      text: _isEditing ? '' : 'GreenHub123!',
+    );
     _selectedRole = widget.user?.role ?? UserRole.buyer;
   }
 
@@ -73,7 +75,11 @@ class _AdminUserFormSheetState extends ConsumerState<AdminUserFormSheet> {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(_isEditing ? 'Role updated successfully' : 'User created successfully'),
+            content: Text(
+              _isEditing
+                  ? 'Role updated successfully'
+                  : 'User created successfully',
+            ),
             backgroundColor: AppTheme.success,
           ),
         );
@@ -121,7 +127,7 @@ class _AdminUserFormSheetState extends ConsumerState<AdminUserFormSheet> {
                   ),
                 ),
               ),
-              
+
               Text(
                 _isEditing ? 'Edit User Role' : 'Add New User',
                 style: GoogleFonts.poppins(
@@ -141,7 +147,8 @@ class _AdminUserFormSheetState extends ConsumerState<AdminUserFormSheet> {
                   filled: _isEditing,
                   fillColor: _isEditing ? AppTheme.surfaceDim : null,
                 ),
-                validator: (val) => val!.isEmpty && !_isEditing ? 'Required' : null,
+                validator: (val) =>
+                    val!.isEmpty && !_isEditing ? 'Required' : null,
               ),
               const SizedBox(height: 16),
 
@@ -186,7 +193,9 @@ class _AdminUserFormSheetState extends ConsumerState<AdminUserFormSheet> {
                     prefixIcon: const Icon(Icons.lock_outline),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                        _obscurePassword
+                            ? Icons.visibility_off
+                            : Icons.visibility,
                         color: AppTheme.textMid,
                       ),
                       onPressed: () {
@@ -207,7 +216,7 @@ class _AdminUserFormSheetState extends ConsumerState<AdminUserFormSheet> {
               ],
 
               DropdownButtonFormField<UserRole>(
-                value: _selectedRole,
+                initialValue: _selectedRole,
                 decoration: const InputDecoration(
                   labelText: 'User Role',
                   prefixIcon: Icon(Icons.badge_outlined),
@@ -235,7 +244,10 @@ class _AdminUserFormSheetState extends ConsumerState<AdminUserFormSheet> {
                     ? const SizedBox(
                         height: 20,
                         width: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
                       )
                     : Text(_isEditing ? 'Save Changes' : 'Create User'),
               ),

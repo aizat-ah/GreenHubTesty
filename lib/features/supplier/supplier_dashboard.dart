@@ -62,7 +62,7 @@ class SupplierDashboard extends ConsumerWidget {
                                   color: Colors.white,
                                 ),
                               ),
-                              error: (_, __) => Text(
+                              error: (_, _) => Text(
                                 'Hi, Supplier 👋',
                                 style: GoogleFonts.poppins(
                                   fontSize: 24,
@@ -104,7 +104,7 @@ class SupplierDashboard extends ConsumerWidget {
                           ),
                         ),
                         loading: () => const SizedBox.shrink(),
-                        error: (_, __) => Text(
+                        error: (_, _) => Text(
                           'Supplier · Store overview',
                           style: GoogleFonts.inter(
                             fontSize: 14,
@@ -129,7 +129,7 @@ class SupplierDashboard extends ConsumerWidget {
                   height: 90,
                   child: Center(child: CircularProgressIndicator()),
                 ),
-                error: (_, __) => const SizedBox.shrink(),
+                error: (_, _) => const SizedBox.shrink(),
               ),
             ),
           ),
@@ -190,53 +190,66 @@ class _StatsGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final pending =
-        orders.where((o) => o.status == OrderStatus.pending).length;
-    final confirmed =
-        orders.where((o) => o.status == OrderStatus.confirmed).length;
-    final completed =
-        orders.where((o) => o.status == OrderStatus.completed).length;
+    final pending = orders.where((o) => o.status == OrderStatus.pending).length;
+    final confirmed = orders
+        .where((o) => o.status == OrderStatus.confirmed)
+        .length;
+    final completed = orders
+        .where((o) => o.status == OrderStatus.completed)
+        .length;
     final revenue = orders
         .where((o) => o.status == OrderStatus.completed)
         .fold(0.0, (sum, o) => sum + o.totalPrice);
 
     return Column(
       children: [
-        Row(children: [
-          Expanded(
+        Row(
+          children: [
+            Expanded(
               child: _StatCard(
-                  label: 'Pending',
-                  value: '$pending',
-                  icon: '🕐',
-                  color: const Color(0xFFE65100),
-                  bg: const Color(0xFFFFF3E0))),
-          const SizedBox(width: 12),
-          Expanded(
+                label: 'Pending',
+                value: '$pending',
+                icon: '🕐',
+                color: const Color(0xFFE65100),
+                bg: const Color(0xFFFFF3E0),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
               child: _StatCard(
-                  label: 'Confirmed',
-                  value: '$confirmed',
-                  icon: '✅',
-                  color: const Color(0xFF2E7D32),
-                  bg: const Color(0xFFE8F5E9))),
-        ]),
+                label: 'Confirmed',
+                value: '$confirmed',
+                icon: '✅',
+                color: const Color(0xFF2E7D32),
+                bg: const Color(0xFFE8F5E9),
+              ),
+            ),
+          ],
+        ),
         const SizedBox(height: 12),
-        Row(children: [
-          Expanded(
+        Row(
+          children: [
+            Expanded(
               child: _StatCard(
-                  label: 'Completed',
-                  value: '$completed',
-                  icon: '🎉',
-                  color: const Color(0xFF1565C0),
-                  bg: const Color(0xFFE3F2FD))),
-          const SizedBox(width: 12),
-          Expanded(
+                label: 'Completed',
+                value: '$completed',
+                icon: '🎉',
+                color: const Color(0xFF1565C0),
+                bg: const Color(0xFFE3F2FD),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
               child: _StatCard(
-                  label: 'Revenue',
-                  value: 'RM ${revenue.toStringAsFixed(0)}',
-                  icon: '💰',
-                  color: AppTheme.primary,
-                  bg: AppTheme.primary.withOpacity(0.08))),
-        ]),
+                label: 'Revenue',
+                value: 'RM ${revenue.toStringAsFixed(0)}',
+                icon: '💰',
+                color: AppTheme.primary,
+                bg: AppTheme.primary.withOpacity(0.08),
+              ),
+            ),
+          ],
+        ),
       ],
     );
   }
@@ -245,12 +258,13 @@ class _StatsGrid extends StatelessWidget {
 class _StatCard extends StatelessWidget {
   final String label, value, icon;
   final Color color, bg;
-  const _StatCard(
-      {required this.label,
-      required this.value,
-      required this.icon,
-      required this.color,
-      required this.bg});
+  const _StatCard({
+    required this.label,
+    required this.value,
+    required this.icon,
+    required this.color,
+    required this.bg,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -361,8 +375,7 @@ class _QuickActionTile extends StatelessWidget {
             if (badge != null && badge! > 0) ...[
               Container(
                 margin: const EdgeInsets.only(right: 10),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
                 decoration: BoxDecoration(
                   gradient: AppTheme.accentGradient,
                   borderRadius: BorderRadius.circular(10),
@@ -377,8 +390,11 @@ class _QuickActionTile extends StatelessWidget {
                 ),
               ),
             ],
-            const Icon(Icons.arrow_forward_ios_rounded,
-                size: 14, color: AppTheme.textLight),
+            const Icon(
+              Icons.arrow_forward_ios_rounded,
+              size: 14,
+              color: AppTheme.textLight,
+            ),
           ],
         ),
       ),

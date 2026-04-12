@@ -7,7 +7,6 @@ import '../../core/theme/app_theme.dart';
 import '../../providers/admin_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../models/order_model.dart';
-import '../../models/user_models.dart';
 
 class AdminDashboard extends ConsumerWidget {
   const AdminDashboard({super.key});
@@ -18,9 +17,7 @@ class AdminDashboard extends ConsumerWidget {
       backgroundColor: AppTheme.background,
       body: CustomScrollView(
         slivers: [
-          SliverToBoxAdapter(
-            child: _buildHeader(context, ref),
-          ),
+          SliverToBoxAdapter(child: _buildHeader(context, ref)),
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.all(20),
@@ -98,7 +95,8 @@ class AdminDashboard extends ConsumerWidget {
               _buildActionIcon(
                 icon: Icons.logout,
                 tooltip: 'Log out',
-                onPressed: () => ref.read(authNotifierProvider.notifier).signOut(),
+                onPressed: () =>
+                    ref.read(authNotifierProvider.notifier).signOut(),
               ),
             ],
           ),
@@ -136,10 +134,7 @@ class AdminDashboard extends ConsumerWidget {
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.15),
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          color: Colors.white.withOpacity(0.2),
-          width: 1,
-        ),
+        border: Border.all(color: Colors.white.withOpacity(0.2), width: 1),
       ),
       child: IconButton(
         padding: EdgeInsets.zero,
@@ -206,7 +201,10 @@ class AdminDashboard extends ConsumerWidget {
                       color: AppTheme.primary.withOpacity(0.1),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.manage_accounts, color: AppTheme.primary),
+                    child: const Icon(
+                      Icons.manage_accounts,
+                      color: AppTheme.primary,
+                    ),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
@@ -250,17 +248,49 @@ class AdminDashboard extends ConsumerWidget {
         const SizedBox(height: 12),
         Row(
           children: [
-            Expanded(child: _StatusItem(label: 'Pending', count: pending, color: const Color(0xFFE65100), bgColor: const Color(0xFFFFF3E0), emoji: '🕐')),
+            Expanded(
+              child: _StatusItem(
+                label: 'Pending',
+                count: pending,
+                color: const Color(0xFFE65100),
+                bgColor: const Color(0xFFFFF3E0),
+                emoji: '🕐',
+              ),
+            ),
             const SizedBox(width: 10),
-            Expanded(child: _StatusItem(label: 'Confirmed', count: confirmed, color: const Color(0xFF2E7D32), bgColor: const Color(0xFFE8F5E9), emoji: '✅')),
+            Expanded(
+              child: _StatusItem(
+                label: 'Confirmed',
+                count: confirmed,
+                color: const Color(0xFF2E7D32),
+                bgColor: const Color(0xFFE8F5E9),
+                emoji: '✅',
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 10),
         Row(
           children: [
-            Expanded(child: _StatusItem(label: 'Completed', count: completed, color: const Color(0xFF1565C0), bgColor: const Color(0xFFE3F2FD), emoji: '🎉')),
+            Expanded(
+              child: _StatusItem(
+                label: 'Completed',
+                count: completed,
+                color: const Color(0xFF1565C0),
+                bgColor: const Color(0xFFE3F2FD),
+                emoji: '🎉',
+              ),
+            ),
             const SizedBox(width: 10),
-            Expanded(child: _StatusItem(label: 'Cancelled', count: cancelled, color: const Color(0xFFC62828), bgColor: const Color(0xFFFFEBEE), emoji: '❌')),
+            Expanded(
+              child: _StatusItem(
+                label: 'Cancelled',
+                count: cancelled,
+                color: const Color(0xFFC62828),
+                bgColor: const Color(0xFFFFEBEE),
+                emoji: '❌',
+              ),
+            ),
           ],
         ),
       ],
@@ -286,93 +316,92 @@ class AdminDashboard extends ConsumerWidget {
         final recentOrders = orders.take(5).toList();
 
         return SliverList(
-          delegate: SliverChildBuilderDelegate(
-            (context, index) {
-              final order = recentOrders[index];
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-                child: InkWell(
-                  onTap: () => context.push('/admin/orders'),
-                  borderRadius: BorderRadius.circular(14),
-                  child: Ink(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: AppTheme.surface,
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: AppTheme.divider),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 48,
-                          height: 48,
-                          decoration: BoxDecoration(
-                            color: AppTheme.surfaceDim,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Center(
-                            child: Text(
-                              order.status.emoji,
-                              style: const TextStyle(fontSize: 24),
-                            ),
-                          ),
+          delegate: SliverChildBuilderDelegate((context, index) {
+            final order = recentOrders[index];
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+              child: InkWell(
+                onTap: () => context.push('/admin/orders'),
+                borderRadius: BorderRadius.circular(14),
+                child: Ink(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppTheme.surface,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: AppTheme.divider),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: AppTheme.surfaceDim,
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                order.customerName,
-                                style: GoogleFonts.inter(
-                                  fontWeight: FontWeight.w600,
-                                  color: AppTheme.textDark,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                '${order.items.length} items • RM ${order.totalPrice.toStringAsFixed(2)}',
-                                style: GoogleFonts.inter(
-                                  fontSize: 13,
-                                  color: AppTheme.textMid,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: _getStatusColor(order.status).withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
+                        child: Center(
                           child: Text(
-                            order.status.label,
-                            style: GoogleFonts.inter(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: _getStatusColor(order.status),
-                            ),
+                            order.status.emoji,
+                            style: const TextStyle(fontSize: 24),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              order.customerName,
+                              style: GoogleFonts.inter(
+                                fontWeight: FontWeight.w600,
+                                color: AppTheme.textDark,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '${order.items.length} items • RM ${order.totalPrice.toStringAsFixed(2)}',
+                              style: GoogleFonts.inter(
+                                fontSize: 13,
+                                color: AppTheme.textMid,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: _getStatusColor(order.status).withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          order.status.label,
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: _getStatusColor(order.status),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              );
-            },
-            childCount: recentOrders.length,
-          ),
+              ),
+            );
+          }, childCount: recentOrders.length),
         );
       },
       loading: () => const SliverToBoxAdapter(
         child: Center(child: CircularProgressIndicator()),
       ),
-      error: (e, st) => SliverToBoxAdapter(
-        child: Center(child: Text('Error: $e')),
-      ),
+      error: (e, st) =>
+          SliverToBoxAdapter(child: Center(child: Text('Error: $e'))),
     );
   }
 

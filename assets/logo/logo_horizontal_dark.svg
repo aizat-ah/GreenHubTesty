@@ -1,0 +1,11 @@
+<svg width="300" height="88" viewBox="0 0 300 88" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(0, 0)">
+    <rect width="88" height="88" rx="22" fill="#FFFFFF" fill-opacity="0.15"/>
+    <path d="M 44 64 C 20 54, 25 25, 44 20 C 63 25, 68 54, 44 64 Z" fill="#52B788"/>
+    <circle cx="44" cy="69" r="4.5" fill="#F4A261"/>
+  </g>
+  <g transform="translate(104, 0)">
+    <text x="0" y="48" font-family="'Poppins', 'DM Sans', 'Nunito', sans-serif" font-weight="bold" font-size="34" letter-spacing="-0.5" fill="#FFFFFF">GreenHub</text>
+    <text x="2" y="68" font-family="'Poppins', 'DM Sans', 'Nunito', sans-serif" font-weight="normal" font-size="12" fill="#FFFFFF" fill-opacity="0.7" letter-spacing="3">FRESH FROM THE FARM</text>
+  </g>
+</svg>

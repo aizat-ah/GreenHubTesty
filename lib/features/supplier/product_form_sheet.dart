@@ -62,10 +62,12 @@ class _ProductFormSheetState extends ConsumerState<ProductFormSheet> {
     final p = widget.existingProduct;
     _nameCtrl = TextEditingController(text: p?.name ?? '');
     _descCtrl = TextEditingController(text: p?.description ?? '');
-    _priceCtrl =
-        TextEditingController(text: p != null ? p.price.toString() : '');
-    _stockCtrl =
-        TextEditingController(text: p != null ? p.stock.toString() : '');
+    _priceCtrl = TextEditingController(
+      text: p != null ? p.price.toString() : '',
+    );
+    _stockCtrl = TextEditingController(
+      text: p != null ? p.stock.toString() : '',
+    );
     _categoryCtrl = TextEditingController(text: p?.category ?? '');
     _selectedUnit = p?.unit ?? 'kg';
     _selectedCategory = (p != null && _kCategories.contains(p.category))
@@ -108,8 +110,8 @@ class _ProductFormSheetState extends ConsumerState<ProductFormSheet> {
         setState(() => _isUploadingImage = false);
       }
 
-      final category = _selectedCategory == 'Others' &&
-              _categoryCtrl.text.trim().isNotEmpty
+      final category =
+          _selectedCategory == 'Others' && _categoryCtrl.text.trim().isNotEmpty
           ? _categoryCtrl.text.trim()
           : _selectedCategory;
 
@@ -147,17 +149,19 @@ class _ProductFormSheetState extends ConsumerState<ProductFormSheet> {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(_isEditing
-                ? '${_nameCtrl.text} updated!'
-                : '${_nameCtrl.text} added!'),
+            content: Text(
+              _isEditing
+                  ? '${_nameCtrl.text} updated!'
+                  : '${_nameCtrl.text} added!',
+            ),
           ),
         );
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);
@@ -211,8 +215,11 @@ class _ProductFormSheetState extends ConsumerState<ProductFormSheet> {
                       color: AppTheme.surfaceDim,
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Icon(Icons.close_rounded,
-                        size: 18, color: AppTheme.textMid),
+                    child: const Icon(
+                      Icons.close_rounded,
+                      size: 18,
+                      color: AppTheme.textMid,
+                    ),
                   ),
                 ),
               ],
@@ -270,14 +277,17 @@ class _ProductFormSheetState extends ConsumerState<ProductFormSheet> {
                                 controller: _priceCtrl,
                                 keyboardType:
                                     const TextInputType.numberWithOptions(
-                                        decimal: true),
+                                      decimal: true,
+                                    ),
                                 inputFormatters: [
                                   FilteringTextInputFormatter.allow(
-                                      RegExp(r'^\d*\.?\d{0,2}')),
+                                    RegExp(r'^\d*\.?\d{0,2}'),
+                                  ),
                                 ],
                                 decoration: const InputDecoration(
-                                    hintText: '0.00',
-                                    prefixText: 'RM '),
+                                  hintText: '0.00',
+                                  prefixText: 'RM ',
+                                ),
                                 validator: (v) {
                                   if (v == null || v.trim().isEmpty) {
                                     return 'Required';
@@ -299,13 +309,15 @@ class _ProductFormSheetState extends ConsumerState<ProductFormSheet> {
                             children: [
                               _label('Unit *'),
                               DropdownButtonFormField<String>(
-                                value: _selectedUnit,
+                                initialValue: _selectedUnit,
                                 decoration: const InputDecoration(),
                                 items: _kUnits
-                                    .map((u) => DropdownMenuItem(
-                                          value: u,
-                                          child: Text(u),
-                                        ))
+                                    .map(
+                                      (u) => DropdownMenuItem(
+                                        value: u,
+                                        child: Text(u),
+                                      ),
+                                    )
                                     .toList(),
                                 onChanged: (v) =>
                                     setState(() => _selectedUnit = v!),
@@ -322,14 +334,17 @@ class _ProductFormSheetState extends ConsumerState<ProductFormSheet> {
                     TextFormField(
                       controller: _stockCtrl,
                       keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true),
+                        decimal: true,
+                      ),
                       inputFormatters: [
                         FilteringTextInputFormatter.allow(
-                            RegExp(r'^\d*\.?\d{0,2}')),
+                          RegExp(r'^\d*\.?\d{0,2}'),
+                        ),
                       ],
                       decoration: InputDecoration(
-                          hintText: 'e.g. 50',
-                          suffixText: _selectedUnit),
+                        hintText: 'e.g. 50',
+                        suffixText: _selectedUnit,
+                      ),
                       validator: (v) {
                         if (v == null || v.trim().isEmpty) {
                           return 'Stock is required';
@@ -345,16 +360,14 @@ class _ProductFormSheetState extends ConsumerState<ProductFormSheet> {
                     // Category
                     _label('Category *'),
                     DropdownButtonFormField<String>(
-                      value: _selectedCategory,
+                      initialValue: _selectedCategory,
                       decoration: const InputDecoration(),
                       items: _kCategories
-                          .map((c) => DropdownMenuItem(
-                                value: c,
-                                child: Text(c),
-                              ))
+                          .map(
+                            (c) => DropdownMenuItem(value: c, child: Text(c)),
+                          )
                           .toList(),
-                      onChanged: (v) =>
-                          setState(() => _selectedCategory = v!),
+                      onChanged: (v) => setState(() => _selectedCategory = v!),
                     ),
 
                     // Custom category if "Others"
@@ -387,7 +400,9 @@ class _ProductFormSheetState extends ConsumerState<ProductFormSheet> {
                         hintText:
                             'e.g. Fresh local spinach, harvested daily from Cameron Highlands',
                         counterStyle: GoogleFonts.inter(
-                            fontSize: 11, color: AppTheme.textLight),
+                          fontSize: 11,
+                          color: AppTheme.textLight,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -395,15 +410,20 @@ class _ProductFormSheetState extends ConsumerState<ProductFormSheet> {
                     // Available toggle
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 6),
+                        horizontal: 16,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
                         color: AppTheme.surfaceDim,
                         borderRadius: BorderRadius.circular(14),
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.visibility_outlined,
-                              size: 18, color: AppTheme.textMid),
+                          const Icon(
+                            Icons.visibility_outlined,
+                            size: 18,
+                            color: AppTheme.textMid,
+                          ),
                           const SizedBox(width: 10),
                           Expanded(
                             child: Column(
@@ -420,16 +440,16 @@ class _ProductFormSheetState extends ConsumerState<ProductFormSheet> {
                                 Text(
                                   'Customers can see and order this product',
                                   style: GoogleFonts.inter(
-                                      fontSize: 11,
-                                      color: AppTheme.textLight),
+                                    fontSize: 11,
+                                    color: AppTheme.textLight,
+                                  ),
                                 ),
                               ],
                             ),
                           ),
                           Switch(
                             value: _isAvailable,
-                            onChanged: (v) =>
-                                setState(() => _isAvailable = v),
+                            onChanged: (v) => setState(() => _isAvailable = v),
                           ),
                         ],
                       ),
@@ -463,7 +483,9 @@ class _ProductFormSheetState extends ConsumerState<ProductFormSheet> {
                             width: 20,
                             height: 20,
                             child: CircularProgressIndicator(
-                                color: Colors.white, strokeWidth: 2.5),
+                              color: Colors.white,
+                              strokeWidth: 2.5,
+                            ),
                           ),
                           const SizedBox(width: 10),
                           Text(
@@ -555,7 +577,7 @@ class _ImagePicker extends StatelessWidget {
                       : CachedNetworkImage(
                           imageUrl: existingUrl!,
                           fit: BoxFit.cover,
-                          placeholder: (_, __) => Container(
+                          placeholder: (_, _) => Container(
                             color: const Color(0xFFEEF3EC),
                             child: const Center(
                               child: CircularProgressIndicator(),
@@ -575,8 +597,11 @@ class _ImagePicker extends StatelessWidget {
                       color: Colors.black.withOpacity(0.6),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.close_rounded,
-                        color: Colors.white, size: 16),
+                    child: const Icon(
+                      Icons.close_rounded,
+                      color: Colors.white,
+                      size: 16,
+                    ),
                   ),
                 ),
               ),
@@ -627,10 +652,7 @@ class _PickerButton extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppTheme.surfaceDim,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: AppTheme.divider,
-            style: BorderStyle.solid,
-          ),
+          border: Border.all(color: AppTheme.divider, style: BorderStyle.solid),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

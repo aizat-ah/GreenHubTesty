@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_theme.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../providers/auth_provider.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -95,20 +96,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Container(
-                      width: 72,
-                      height: 72,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(22),
-                        border: Border.all(
-                          color: Colors.white.withOpacity(0.2),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: SvgPicture.asset(
+                          'assets/logo/logo_horizontal_light.svg',
+                          height: 38,
+                          fit: BoxFit.contain,
                         ),
-                      ),
-                      child: const Icon(
-                        Icons.eco_rounded,
-                        size: 38,
-                        color: Colors.white,
                       ),
                     ),
                     const SizedBox(height: 16),

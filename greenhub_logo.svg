@@ -1,0 +1,78 @@
+<svg width="100%" viewBox="0 0 680 428" role="img" xmlns="http://www.w3.org/2000/svg">
+  <title style="fill:rgb(0, 0, 0);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto">GreenHub Logo</title>
+  <desc style="fill:rgb(0, 0, 0);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto">Minimalistic modern logo for GreenHub featuring a leaf and hub mark with wordmark</desc>
+
+  <defs>
+    
+  </defs>
+
+  <!-- ── LIGHT VERSION (left) ── -->
+  <g transform="translate(90, 50)" style="fill:rgb(0, 0, 0);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto">
+
+    <!-- Icon mark: rounded square base -->
+    <rect x="0" y="0" width="88" height="88" rx="22" style="fill:rgb(45, 106, 79);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+
+    <!-- Leaf shape (main) -->
+    <path d="M44 18 C62 18 72 30 70 50 C68 65 56 72 44 72 C44 72 44 50 44 18 Z" fill="#52B788" style="fill:rgb(82, 183, 136);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+    <!-- Leaf vein -->
+    <line x1="44" y1="22" x2="44" y2="68" stroke="#2D6A4F" stroke-width="1.5" stroke-linecap="round" style="fill:rgb(0, 0, 0);stroke:rgb(45, 106, 79);color:rgb(255, 255, 255);stroke-width:1.5px;stroke-linecap:round;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+    <!-- Leaf left curve -->
+    <path d="M44 40 C36 36 24 38 20 48" fill="none" stroke="#2D6A4F" stroke-width="1.2" stroke-linecap="round" style="fill:none;stroke:rgb(45, 106, 79);color:rgb(255, 255, 255);stroke-width:1.2px;stroke-linecap:round;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+    <!-- Hub dot — center accent -->
+    <circle cx="44" cy="54" r="5" fill="#F4A261" style="fill:rgb(244, 162, 97);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+
+    <!-- Wordmark -->
+    <text x="104" y="40" font-size="32" style="fill:rgb(27, 27, 27);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:system-ui, sans-serif;font-size:32px;font-weight:700;text-anchor:start;dominant-baseline:auto">Green</text>
+    <text x="104" y="74" font-size="32" fill="#2D6A4F" style="fill:rgb(27, 27, 27);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:system-ui, sans-serif;font-size:32px;font-weight:700;text-anchor:start;dominant-baseline:auto">Hub</text>
+
+    <!-- Tagline -->
+    <text x="106" y="100" style="fill:rgb(85, 85, 85);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:system-ui, sans-serif;font-size:13px;font-weight:400;text-anchor:start;dominant-baseline:auto">FRESH FROM THE FARM</text>
+  </g>
+
+  <!-- Divider -->
+  <line x1="40" y1="190" x2="640" y2="190" stroke="#E8EDE6" stroke-width="1" style="fill:rgb(0, 0, 0);stroke:rgb(232, 237, 230);color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+
+  <!-- ── DARK VERSION (right, on dark bg) ── -->
+  <rect x="40" y="210" width="600" height="160" rx="16" fill="#2D6A4F" style="fill:rgb(45, 106, 79);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+
+  <g transform="translate(110, 232)" style="fill:rgb(0, 0, 0);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto">
+    <!-- Icon mark: white rounded square -->
+    <rect x="0" y="0" width="80" height="80" rx="20" fill="rgba(255,255,255,0.15)" style="fill:rgba(255, 255, 255, 0.15);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+
+    <!-- Leaf -->
+    <path d="M40 14 C56 14 66 26 64 44 C62 58 51 65 40 65 C40 65 40 44 40 14 Z" fill="#52B788" style="fill:rgb(82, 183, 136);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+    <line x1="40" y1="18" x2="40" y2="62" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" stroke-linecap="round" style="fill:rgb(0, 0, 0);stroke:rgba(255, 255, 255, 0.4);color:rgb(255, 255, 255);stroke-width:1.5px;stroke-linecap:round;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+    <path d="M40 36 C32 32 22 34 18 43" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" stroke-linecap="round" style="fill:none;stroke:rgba(255, 255, 255, 0.3);color:rgb(255, 255, 255);stroke-width:1.2px;stroke-linecap:round;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+    <circle cx="40" cy="50" r="5" fill="#F4A261" style="fill:rgb(244, 162, 97);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+
+    <!-- Wordmark white -->
+    <text x="96" y="36" font-size="30" font-family="system-ui, sans-serif" font-weight="700" letter-spacing="-1" fill="white" style="fill:rgb(255, 255, 255);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:system-ui, sans-serif;font-size:30px;font-weight:700;text-anchor:start;dominant-baseline:auto">Green</text>
+    <text x="96" y="68" font-size="30" font-family="system-ui, sans-serif" font-weight="700" letter-spacing="-1" fill="rgba(255,255,255,0.6)" style="fill:rgba(255, 255, 255, 0.6);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:system-ui, sans-serif;font-size:30px;font-weight:700;text-anchor:start;dominant-baseline:auto">Hub</text>
+
+    <!-- Tagline -->
+    <text x="98" y="92" font-family="system-ui, sans-serif" font-weight="400" font-size="11" letter-spacing="3" fill="rgba(255,255,255,0.5)" style="fill:rgba(255, 255, 255, 0.5);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:system-ui, sans-serif;font-size:11px;font-weight:400;text-anchor:start;dominant-baseline:auto">FRESH FROM THE FARM</text>
+  </g>
+
+  <!-- ── ICON ONLY versions (bottom row) ── -->
+  <!-- Small -->
+  <g transform="translate(100, 395)" style="fill:rgb(0, 0, 0);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto">
+    <text x="0" y="0" font-size="11" font-family="system-ui" fill="#9E9E9E" letter-spacing="1" style="fill:rgb(158, 158, 158);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:system-ui;font-size:11px;font-weight:400;text-anchor:start;dominant-baseline:auto">ICON VARIANTS</text>
+  </g>
+
+  <!-- Icon 48px on white -->
+  <rect x="100" y="370" width="48" height="48" rx="12" fill="#2D6A4F" style="fill:rgb(45, 106, 79);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+  <path d="M124 378 C134 378 140 385 139 396 C138 404 131 408 124 408 C124 408 124 396 124 378 Z" fill="#52B788" style="fill:rgb(82, 183, 136);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+  <circle cx="124" cy="400" r="3.5" fill="#F4A261" style="fill:rgb(244, 162, 97);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+
+  <!-- Icon 48px rounded pill -->
+  <rect x="168" y="370" width="88" height="48" rx="24" fill="#2D6A4F" style="fill:rgb(45, 106, 79);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+  <path d="M212 378 C222 378 228 385 227 396 C226 404 219 408 212 408 C212 408 212 396 212 378 Z" fill="#52B788" style="fill:rgb(82, 183, 136);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+  <circle cx="212" cy="400" r="3.5" fill="#F4A261" style="fill:rgb(244, 162, 97);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+  <text x="228" y="401" font-size="14" font-family="system-ui" font-weight="700" fill="white" letter-spacing="-0.5" style="fill:rgb(255, 255, 255);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:system-ui;font-size:14px;font-weight:700;text-anchor:start;dominant-baseline:auto">GH</text>
+
+  <!-- Icon 48px accent filled -->
+  <rect x="276" y="370" width="48" height="48" rx="12" fill="#F4A261" style="fill:rgb(244, 162, 97);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+  <path d="M300 378 C310 378 316 385 315 396 C314 404 307 408 300 408 C300 408 300 396 300 378 Z" fill="white" opacity="0.9" style="fill:rgb(255, 255, 255);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.9;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+  <circle cx="300" cy="400" r="3.5" fill="#2D6A4F" style="fill:rgb(45, 106, 79);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+
+</svg>

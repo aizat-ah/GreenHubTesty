@@ -18,8 +18,6 @@ import '../features/admin/admin_order_monitor.dart';
 import '../features/admin/manage_products_screen.dart';
 import '../features/supplier/supplier_dashboard.dart';
 import '../features/supplier/supplier_orders_screen.dart';
-import '../features/supplier/manage_products_screen.dart'
-    hide ManageProductsScreen;
 import '../features/profile/profile_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -58,129 +56,94 @@ final routerProvider = Provider<GoRouter>((ref) {
       // ── Auth ──────────────────────────────────────────────
       GoRoute(
         path: '/splash',
-        pageBuilder: (context, state) => _buildSmoothPage(
-          state,
-          const SplashScreen(),
-        ),
+        pageBuilder: (context, state) =>
+            _buildSmoothPage(state, const SplashScreen()),
       ),
       GoRoute(
         path: '/login',
-        pageBuilder: (context, state) => _buildSmoothPage(
-          state,
-          const LoginScreen(),
-        ),
+        pageBuilder: (context, state) =>
+            _buildSmoothPage(state, const LoginScreen()),
       ),
       GoRoute(
         path: '/register',
-        pageBuilder: (context, state) => _buildSmoothPage(
-          state,
-          const RegisterScreen(),
-        ),
+        pageBuilder: (context, state) =>
+            _buildSmoothPage(state, const RegisterScreen()),
       ),
       GoRoute(
         path: '/profile',
-        pageBuilder: (context, state) => _buildSmoothPage(
-          state,
-          const ProfileScreen(),
-        ),
+        pageBuilder: (context, state) =>
+            _buildSmoothPage(state, const ProfileScreen()),
       ),
 
       // ── Buyer ─────────────────────────────────────────────
       GoRoute(
         path: '/home',
-        pageBuilder: (context, state) => _buildSmoothPage(
-          state,
-          const ProductListScreen(),
-        ),
+        pageBuilder: (context, state) =>
+            _buildSmoothPage(state, const ProductListScreen()),
       ),
       GoRoute(
         path: '/products',
-        pageBuilder: (context, state) => _buildSmoothPage(
-          state,
-          const ProductListScreen(),
-        ),
+        pageBuilder: (context, state) =>
+            _buildSmoothPage(state, const ProductListScreen()),
       ),
       GoRoute(
         path: '/cart',
-        pageBuilder: (context, state) => _buildSmoothPage(
-          state,
-          const CartScreen(),
-        ),
+        pageBuilder: (context, state) =>
+            _buildSmoothPage(state, const CartScreen()),
       ),
       GoRoute(
         path: '/checkout',
-        pageBuilder: (context, state) => _buildSmoothPage(
-          state,
-          const CheckoutScreen(),
-        ),
+        pageBuilder: (context, state) =>
+            _buildSmoothPage(state, const CheckoutScreen()),
       ),
       GoRoute(
         path: '/order-success',
         pageBuilder: (context, state) {
           final order = state.extra as OrderModel;
-          return _buildSmoothPage(
-            state,
-            OrderSuccessScreen(order: order),
-          );
+          return _buildSmoothPage(state, OrderSuccessScreen(order: order));
         },
       ),
       GoRoute(
         path: '/orders',
-        pageBuilder: (context, state) => _buildSmoothPage(
-          state,
-          const MyOrdersScreen(),
-        ),
+        pageBuilder: (context, state) =>
+            _buildSmoothPage(state, const MyOrdersScreen()),
       ),
 
       // ── Supplier / Admin ───────────────────────────────────
       GoRoute(
         path: '/supplier',
-        pageBuilder: (context, state) => _buildSmoothPage(
-          state,
-          const SupplierDashboard(),
-        ),
+        pageBuilder: (context, state) =>
+            _buildSmoothPage(state, const SupplierDashboard()),
       ),
       GoRoute(
         path: '/supplier/orders',
-        pageBuilder: (context, state) => _buildSmoothPage(
-          state,
-          const SupplierOrdersScreen(),
-        ),
+        pageBuilder: (context, state) =>
+            _buildSmoothPage(state, const SupplierOrdersScreen()),
       ),
       GoRoute(
         path: '/supplier/products',
-        pageBuilder: (context, state) => _buildSmoothPage(
-          state,
-          const ManageProductsScreen(),
-        ),
+        pageBuilder: (context, state) =>
+            _buildSmoothPage(state, const ManageProductsScreen()),
       ),
       GoRoute(
         path: '/admin',
-        pageBuilder: (context, state) => _buildSmoothPage(
-          state,
-          const AdminDashboard(),
-        ),
+        pageBuilder: (context, state) =>
+            _buildSmoothPage(state, const AdminDashboard()),
       ),
       GoRoute(
         path: '/admin/users',
-        pageBuilder: (context, state) => _buildSmoothPage(
-          state,
-          const AdminUserManagement(),
-        ),
+        pageBuilder: (context, state) =>
+            _buildSmoothPage(state, const AdminUserManagement()),
       ),
       GoRoute(
         path: '/admin/orders',
-        pageBuilder: (context, state) => _buildSmoothPage(
-          state,
-          const AdminOrderMonitor(),
-        ),
+        pageBuilder: (context, state) =>
+            _buildSmoothPage(state, const AdminOrderMonitor()),
       ),
       GoRoute(
         path: '/admin/products',
-        pageBuilder: (context, state) => _buildSmoothPage(
-          state,
-          const ManageProductsScreen(),
-        ),
+        pageBuilder: (context, state) =>
+            _buildSmoothPage(state, const ManageProductsScreen()),
       ),
     ],
     errorBuilder: (context, state) =>
@@ -198,9 +161,10 @@ CustomTransitionPage _buildSmoothPage(GoRouterState state, Widget child) {
       return FadeTransition(
         opacity: CurveTween(curve: Curves.easeIn).animate(animation),
         child: ScaleTransition(
-          scale: Tween<double>(begin: 0.98, end: 1.0)
-              .chain(CurveTween(curve: Curves.easeOutCirc))
-              .animate(animation),
+          scale: Tween<double>(
+            begin: 0.98,
+            end: 1.0,
+          ).chain(CurveTween(curve: Curves.easeOutCirc)).animate(animation),
           child: child,
         ),
       );
