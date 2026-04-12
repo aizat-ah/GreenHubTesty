@@ -14,9 +14,15 @@ final orderServiceProvider = Provider<OrderService>((ref) => OrderService());
 // Buyer's own orders stream
 final myOrdersProvider = StreamProvider<List<OrderModel>>((ref) {
   final userAsync = ref.watch(currentUserProvider);
-  final user = userAsync.whenData((data) => data).value;
-  if (user == null) return Stream.value([]);
-  return ref.watch(orderServiceProvider).buyerOrdersStream(user.uid);
+  
+  return userAsync.when(
+    data: (user) {
+      if (user == null) return Stream.value([]);
+      return ref.watch(orderServiceProvider).buyerOrdersStream(user.uid);
+    },
+    loading: () => Stream.value([]),
+    error: (_, __) => Stream.error('Failed to load user data'),
+  );
 });
 
 // Place order notifier

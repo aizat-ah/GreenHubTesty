@@ -1,1 +1,29 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"greenhub-315c0","appId":"1:105791303794:android:d6eb94d5f893b68d57d2eb","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"greenhub-315c0","configurations":{"android":"1:105791303794:android:d6eb94d5f893b68d57d2eb","ios":"1:105791303794:ios:341615d0548ded7c57d2eb"}}}}}}
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "greenhub-315c0",
+          "appId": "1:105791303794:android:d6eb94d5f893b68d57d2eb",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "greenhub-315c0",
+          "configurations": {
+            "android": "1:105791303794:android:d6eb94d5f893b68d57d2eb",
+            "ios": "1:105791303794:ios:341615d0548ded7c57d2eb"
+          }
+        }
+      }
+    }
+  },
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "storage": {
+    "rules": "storage.rules"
+  }
+}

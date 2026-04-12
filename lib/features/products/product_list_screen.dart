@@ -8,6 +8,7 @@ import '../../providers/cart_provider.dart';
 import 'widgets/product_card.dart';
 import 'widgets/category_filter_bar.dart';
 import 'widgets/product_detail_sheet.dart';
+import 'widgets/bottom_nav_bar.dart';
  
 class ProductListScreen extends ConsumerWidget {
   const ProductListScreen({super.key});
@@ -236,6 +237,7 @@ class ProductListScreen extends ConsumerWidget {
           ],
         ),
       ),
+      bottomNavigationBar: BottomNavBar(currentRoute: '/home'),
     );
   }
  

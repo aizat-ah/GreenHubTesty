@@ -6,6 +6,7 @@ import '../../core/theme/app_theme.dart';
 import '../../models/order_model.dart';
 import '../../providers/order_provider.dart';
 import '../../services/whatsapp_service.dart';
+import '../products/widgets/bottom_nav_bar.dart';
 
 class MyOrdersScreen extends ConsumerWidget {
   const MyOrdersScreen({super.key});
@@ -63,6 +64,7 @@ class MyOrdersScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('Error: $e')),
       ),
+      bottomNavigationBar: BottomNavBar(currentRoute: '/orders'),
     );
   }
 }

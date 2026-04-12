@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_theme.dart';
 import '../../providers/cart_provider.dart';
+import '../products/widgets/bottom_nav_bar.dart';
  
 class CartScreen extends ConsumerWidget {
   const CartScreen({super.key});
@@ -39,7 +40,7 @@ class CartScreen extends ConsumerWidget {
                   child: ListView.separated(
                     padding: const EdgeInsets.all(20),
                     itemCount: cartItems.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 12),
+                    separatorBuilder: (_, _) => const SizedBox(height: 12),
                     itemBuilder: (context, index) {
                       final item = cartItems[index];
                       return _CartItemTile(
@@ -68,6 +69,7 @@ class CartScreen extends ConsumerWidget {
                 ),
               ],
             ),
+      bottomNavigationBar: BottomNavBar(currentRoute: '/cart'),
     );
   }
  
