@@ -8,7 +8,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/product_model.dart';
-import '../../services/product_service.dart';
 import '../../services/image_upload_service.dart';
 
 // Common vegetable categories

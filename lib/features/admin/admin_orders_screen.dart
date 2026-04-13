@@ -8,7 +8,6 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/order_model.dart';
 import '../../providers/order_provider.dart';
-import '../../services/order_service.dart';
 
 // Admin all-orders stream provider
 final adminOrdersProvider = StreamProvider<List<OrderModel>>((ref) {

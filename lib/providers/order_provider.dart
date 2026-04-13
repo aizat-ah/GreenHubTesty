@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:greenhub/models/user_models.dart';
 import '../services/order_service.dart';
-import '../services/whatsapp_service.dart';
 import '../models/order_model.dart';
 import 'auth_provider.dart';
 import 'cart_provider.dart';
@@ -21,7 +20,7 @@ final myOrdersProvider = StreamProvider<List<OrderModel>>((ref) {
       return ref.watch(orderServiceProvider).buyerOrdersStream(user.uid);
     },
     loading: () => Stream.value([]),
-    error: (_, __) => Stream.error('Failed to load user data'),
+    error: (_, _) => Stream.error('Failed to load user data'),
   );
 });
 

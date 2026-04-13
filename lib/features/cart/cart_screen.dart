@@ -102,7 +102,7 @@ class CartScreen extends ConsumerWidget {
                   child: ListView.separated(
                     padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
                     itemCount: cartItems.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 12),
+                    separatorBuilder: (_, _) => const SizedBox(height: 12),
                     itemBuilder: (context, index) {
                       final item = cartItems[index];
                       return Dismissible(
@@ -141,9 +141,9 @@ class CartScreen extends ConsumerWidget {
                                       ? CachedNetworkImage(
                                           imageUrl: item.product.imageUrl,
                                           fit: BoxFit.cover,
-                                          placeholder: (_, __) =>
+                                          placeholder: (_, _) =>
                                               _imgPlaceholder(),
-                                          errorWidget: (_, __, ___) =>
+                                          errorWidget: (_, _, _) =>
                                               _imgPlaceholder(),
                                         )
                                       : _imgPlaceholder(),

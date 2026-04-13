@@ -78,7 +78,7 @@ class SupplierOrdersScreen extends ConsumerWidget {
               );
             },
             loading: () => const SizedBox.shrink(),
-            error: (_, __) => const SizedBox.shrink(),
+            error: (_, _) => const SizedBox.shrink(),
           ),
         ],
       ),
@@ -106,7 +106,7 @@ class SupplierOrdersScreen extends ConsumerWidget {
                 return ListView.separated(
                   padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
                   itemCount: orders.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 14),
+                  separatorBuilder: (_, _) => const SizedBox(height: 14),
                   itemBuilder: (context, index) {
                     return _AdminOrderCard(order: orders[index]);
                   },
@@ -164,7 +164,7 @@ class _StatusFilterBar extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 20),
         itemCount: filters.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 8),
+        separatorBuilder: (_, _) => const SizedBox(width: 8),
         itemBuilder: (context, index) {
           final filter = filters[index];
           final isSelected = selected == filter;

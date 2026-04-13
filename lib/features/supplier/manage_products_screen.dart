@@ -6,7 +6,6 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/product_model.dart';
 import '../../providers/product_provider.dart';
-import '../../services/product_service.dart';
 import 'product_form_sheet.dart';
 
 class ManageProductsScreen extends ConsumerWidget {
