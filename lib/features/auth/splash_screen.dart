@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../providers/auth_provider.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -12,50 +11,69 @@ class SplashScreen extends ConsumerStatefulWidget {
 }
 
 class _SplashScreenState extends ConsumerState<SplashScreen>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
-  late final Animation<double> _logoOpacity;
+    with TickerProviderStateMixin {
+  late final AnimationController _logoController;
+  late final AnimationController _textController;
+  late final AnimationController _pulseController;
+
   late final Animation<double> _logoScale;
-  late final Animation<double> _loaderOpacity;
+  late final Animation<double> _logoOpacity;
+  late final Animation<double> _textSlide;
+  late final Animation<double> _textOpacity;
+  late final Animation<double> _pulse;
 
   @override
   void initState() {
     super.initState();
 
-    _controller = AnimationController(
+    _logoController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1400),
+      duration: const Duration(milliseconds: 900),
+    );
+    _textController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 700),
+    );
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
     );
 
+    _logoScale = Tween<double>(begin: 0.3, end: 1.0).animate(
+      CurvedAnimation(parent: _logoController, curve: Curves.elasticOut),
+    );
     _logoOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.14, 0.71, curve: Curves.easeOutCubic),
+        parent: _logoController,
+        curve: const Interval(0.0, 0.5, curve: Curves.easeOut),
       ),
     );
-
-    _logoScale = Tween<double>(begin: 0.85, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.14, 0.71, curve: Curves.easeOutCubic),
-      ),
+    _textSlide = Tween<double>(begin: 20, end: 0).animate(
+      CurvedAnimation(parent: _textController, curve: Curves.easeOutCubic),
+    );
+    _textOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _textController, curve: Curves.easeOut),
+    );
+    _pulse = Tween<double>(begin: 0.8, end: 1.0).animate(
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
 
-    _loaderOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.64, 1.0, curve: Curves.easeOut),
-      ),
-    );
+    _startAnimation();
+  }
 
-    Future.delayed(const Duration(milliseconds: 200), () {
-      if (mounted) _controller.forward();
-    });
+  Future<void> _startAnimation() async {
+    await Future.delayed(const Duration(milliseconds: 200));
+    _logoController.forward();
+    await Future.delayed(const Duration(milliseconds: 500));
+    _textController.forward();
+    _pulseController.repeat(reverse: true);
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _logoController.dispose();
+    _textController.dispose();
+    _pulseController.dispose();
     super.dispose();
   }
 
@@ -66,110 +84,122 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
     return Scaffold(
       body: Container(
-        width: double.infinity,
-        height: double.infinity,
         decoration: const BoxDecoration(
-          gradient: RadialGradient(
-            center: Alignment.center,
-            radius: 1.2,
+          gradient: LinearGradient(
             colors: [
-              Color(0xFF3D8B6A),
+              Color(0xFF1B4332),
               Color(0xFF2D6A4F),
-              Color(0xFF1A3F30),
+              Color(0xFF40916C),
             ],
-            stops: [0.0, 0.5, 1.0],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
         ),
         child: SafeArea(
-          child: AnimatedBuilder(
-            animation: _controller,
-            builder: (context, _) {
-              return Stack(
-                children: [
-                  // Decorative circle — top right
-                  Positioned(
-                    top: -80,
-                    right: -100,
-                    child: Container(
-                      width: 400,
-                      height: 400,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.white.withValues(alpha: 0.035),
-                      ),
-                    ),
-                  ),
-                  // Decorative circle — bottom left
-                  Positioned(
-                    bottom: -60,
-                    left: -80,
-                    child: Container(
-                      width: 250,
-                      height: 250,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.white.withValues(alpha: 0.035),
-                      ),
-                    ),
-                  ),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Spacer(flex: 3),
 
-                  // Main content column
-                  Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // Logo — fade + scale
-                        Opacity(
-                          opacity: _logoOpacity.value,
-                          child: Transform.scale(
-                            scale: _logoScale.value,
-                            child: SvgPicture.asset(
-                              'assets/logo/logo_horizontal_dark.svg',
-                              height: 56,
-                              fit: BoxFit.contain,
-                              allowDrawingOutsideViewBox: true,
+                // Animated Logo
+                AnimatedBuilder(
+                  animation: _logoController,
+                  builder: (context, child) {
+                    return Opacity(
+                      opacity: _logoOpacity.value,
+                      child: Transform.scale(
+                        scale: _logoScale.value,
+                        child: Container(
+                          width: 110,
+                          height: 110,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(32),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.25),
+                              width: 1.5,
                             ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFF1B4332).withOpacity(0.4),
+                                blurRadius: 40,
+                                offset: const Offset(0, 12),
+                              ),
+                            ],
+                          ),
+                          child: const Icon(
+                            Icons.eco_rounded,
+                            size: 56,
+                            color: Colors.white,
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-
-                  // Bottom section — loader + version
-                  Positioned(
-                    left: 0,
-                    right: 0,
-                    bottom: 24,
-                    child: Opacity(
-                      opacity: _loaderOpacity.value,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          SizedBox(
-                            width: 48,
-                            child: LinearProgressIndicator(
-                              backgroundColor: Colors.white.withValues(alpha: 0.15),
-                              color: Colors.white.withValues(alpha: 0.6),
-                              minHeight: 2,
-                              borderRadius: BorderRadius.circular(1),
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          Text(
-                            'v1.0.0',
-                            style: GoogleFonts.inter(
-                              fontSize: 11,
-                              color: Colors.white.withValues(alpha: 0.30),
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ],
                       ),
-                    ),
-                  ),
-                ],
-              );
-            },
+                    );
+                  },
+                ),
+
+                const SizedBox(height: 28),
+
+                // App Name
+                AnimatedBuilder(
+                  animation: _textController,
+                  builder: (context, child) {
+                    return Opacity(
+                      opacity: _textOpacity.value,
+                      child: Transform.translate(
+                        offset: Offset(0, _textSlide.value),
+                        child: Column(
+                          children: [
+                            Text(
+                              'GreenHub',
+                              style: GoogleFonts.poppins(
+                                fontSize: 34,
+                                fontWeight: FontWeight.w800,
+                                color: Colors.white,
+                                letterSpacing: -0.5,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              'Fresh from farm to table',
+                              style: GoogleFonts.inter(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.white.withOpacity(0.7),
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+
+                const Spacer(flex: 3),
+
+                // Loading indicator
+                AnimatedBuilder(
+                  animation: _pulseController,
+                  builder: (context, child) {
+                    return Opacity(
+                      opacity: _pulse.value,
+                      child: SizedBox(
+                        width: 28,
+                        height: 28,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.5,
+                          color: Colors.white.withOpacity(0.6),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+
+                const SizedBox(height: 48),
+              ],
+            ),
           ),
         ),
       ),
