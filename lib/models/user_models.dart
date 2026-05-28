@@ -1,5 +1,5 @@
 
-enum UserRole { buyer, supplier, admin }
+enum UserRole { buyer, supplier, admin, driver }
 
 class UserModel {
   final String uid;
@@ -23,6 +23,7 @@ class UserModel {
   bool get isBuyer   => role == UserRole.buyer;
   bool get isSupplier => role == UserRole.supplier;
   bool get isAdmin   => role == UserRole.admin;
+  bool get isDriver  => role == UserRole.driver;
 
   // Supplier AND admin can access the supplier/admin panel
   bool get hasSupplierAccess => role == UserRole.supplier || role == UserRole.admin;
@@ -44,7 +45,7 @@ class UserModel {
       'name': name,
       'email': email,
       'phone': phone,
-      'role': role.name, // 'buyer' | 'supplier' | 'admin'
+      'role': role.name, // 'buyer' | 'supplier' | 'admin' | 'driver'
       'photoUrl': photoUrl,
       'createdAt': createdAt,
     };
@@ -54,6 +55,7 @@ class UserModel {
     switch (value) {
       case 'supplier': return UserRole.supplier;
       case 'admin':    return UserRole.admin;
+      case 'driver':   return UserRole.driver;
       default:         return UserRole.buyer;
     }
   }

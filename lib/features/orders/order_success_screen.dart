@@ -107,7 +107,7 @@ class _OrderSuccessScreenState extends State<OrderSuccessScreen>
                             gradient: AppTheme.primaryGradient,
                             boxShadow: [
                               BoxShadow(
-                                color: AppTheme.primary.withOpacity(0.3),
+                                color: AppTheme.primary.withValues(alpha: 0.3),
                                 blurRadius: 30,
                                 offset: const Offset(0, 10),
                               ),

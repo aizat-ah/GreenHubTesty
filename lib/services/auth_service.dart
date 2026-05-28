@@ -3,6 +3,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/user_models.dart';
+import '../models/driver_model.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -32,13 +33,16 @@ class AuthService {
     });
   }
 
-  // Register with specified role (defaults to buyer)
+  // Register with specified role (defaults to buyer).
+  // For driver role, also pass vehicleType and vehiclePlate.
   Future<UserModel> register({
     required String name,
     required String email,
     required String password,
     required String phone,
     UserRole role = UserRole.buyer,
+    String vehicleType = 'Motorcycle',
+    String vehiclePlate = '',
   }) async {
     try {
       final credential = await _auth.createUserWithEmailAndPassword(
@@ -46,8 +50,10 @@ class AuthService {
         password: password,
       );
 
+      final uid = credential.user!.uid;
+
       final user = UserModel(
-        uid: credential.user!.uid,
+        uid: uid,
         name: name.trim(),
         email: email.trim(),
         phone: phone.trim(),
@@ -55,7 +61,27 @@ class AuthService {
         createdAt: DateTime.now(),
       );
 
-      await _db.collection('users').doc(credential.user!.uid).set(user.toMap());
+      final batch = _db.batch();
+
+      // Always write to users collection
+      batch.set(_db.collection('users').doc(uid), user.toMap());
+
+      // If driver, also write to drivers collection
+      if (role == UserRole.driver) {
+        final driver = DriverModel(
+          uid: uid,
+          name: name.trim(),
+          email: email.trim(),
+          phone: phone.trim(),
+          vehicleType: vehicleType,
+          vehiclePlate: vehiclePlate.trim().toUpperCase(),
+          status: DriverStatus.available,
+          createdAt: DateTime.now(),
+        );
+        batch.set(_db.collection('drivers').doc(uid), driver.toMap());
+      }
+
+      await batch.commit();
       await credential.user!.updateDisplayName(name.trim());
       return user;
     } on FirebaseAuthException catch (e) {
@@ -81,7 +107,7 @@ class AuthService {
   }
 
   Future<void> signOut() async => await _auth.signOut();
- 
+
   Future<void> updateUserData(UserModel user) async {
     try {
       await _db.collection('users').doc(user.uid).update({
@@ -93,7 +119,7 @@ class AuthService {
       throw Exception('Failed to update profile: $e');
     }
   }
- 
+
   Future<void> sendPasswordReset(String email) async {
     try {
       await _auth.sendPasswordResetEmail(email: email.trim());

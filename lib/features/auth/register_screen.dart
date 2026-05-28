@@ -22,13 +22,18 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen>
   final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  final _vehiclePlateController = TextEditingController();
+
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
   UserRole _selectedRole = UserRole.buyer;
+  String _selectedVehicleType = 'Motorcycle';
 
   late final AnimationController _animController;
   late final Animation<double> _fadeAnim;
   late final Animation<Offset> _slideAnim;
+
+  final _vehicleTypes = ['Motorcycle', 'Car', 'Van', 'Truck', 'Bicycle'];
 
   @override
   void initState() {
@@ -56,6 +61,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen>
     _phoneController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    _vehiclePlateController.dispose();
     _animController.dispose();
     super.dispose();
   }
@@ -69,6 +75,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen>
           name: _nameController.text.trim(),
           phone: _phoneController.text.trim(),
           role: _selectedRole,
+          vehicleType: _selectedVehicleType,
+          vehiclePlate: _vehiclePlateController.text.trim(),
         );
   }
 
@@ -156,7 +164,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Role Selector
+                        // ── Role Selector ─────────────────────────────────
                         Text(
                           'I want to',
                           style: GoogleFonts.poppins(
@@ -174,11 +182,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen>
                                 label: 'Buy',
                                 subtitle: 'Browse & order',
                                 isSelected: _selectedRole == UserRole.buyer,
-                                onTap: () =>
-                                    setState(() => _selectedRole = UserRole.buyer),
+                                onTap: () => setState(
+                                    () => _selectedRole = UserRole.buyer),
                               ),
                             ),
-                            const SizedBox(width: 12),
+                            const SizedBox(width: 10),
                             Expanded(
                               child: _RoleCard(
                                 icon: Icons.store_rounded,
@@ -189,11 +197,87 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen>
                                     () => _selectedRole = UserRole.supplier),
                               ),
                             ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: _RoleCard(
+                                icon: Icons.delivery_dining_rounded,
+                                label: 'Drive',
+                                subtitle: 'Deliver orders',
+                                isSelected: _selectedRole == UserRole.driver,
+                                onTap: () => setState(
+                                    () => _selectedRole = UserRole.driver),
+                              ),
+                            ),
                           ],
                         ),
+
+                        // ── Driver extra fields (animated) ────────────────
+                        AnimatedSize(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeOutCubic,
+                          child: _selectedRole == UserRole.driver
+                              ? Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(height: 20),
+                                    _buildDriverBanner(),
+                                    const SizedBox(height: 16),
+                                    _FieldLabel('Vehicle Type'),
+                                    const SizedBox(height: 8),
+                                    DropdownButtonFormField<String>(
+                                      value: _selectedVehicleType,
+                                      decoration: InputDecoration(
+                                        prefixIcon: const Icon(
+                                            Icons.two_wheeler_outlined,
+                                            size: 20),
+                                        filled: true,
+                                        fillColor: AppTheme.surfaceDim,
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(14),
+                                          borderSide: BorderSide.none,
+                                        ),
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                                horizontal: 16, vertical: 14),
+                                      ),
+                                      items: _vehicleTypes
+                                          .map((t) => DropdownMenuItem(
+                                              value: t, child: Text(t)))
+                                          .toList(),
+                                      onChanged: (v) => setState(
+                                          () => _selectedVehicleType =
+                                              v ?? 'Motorcycle'),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    _FieldLabel('Vehicle Plate No.'),
+                                    const SizedBox(height: 8),
+                                    TextFormField(
+                                      controller: _vehiclePlateController,
+                                      textCapitalization:
+                                          TextCapitalization.characters,
+                                      decoration: const InputDecoration(
+                                        hintText: 'e.g. WQJ 1234',
+                                        prefixIcon: Icon(Icons.badge_outlined,
+                                            size: 20),
+                                      ),
+                                      validator: (v) {
+                                        if (_selectedRole != UserRole.driver)
+                                          return null;
+                                        if (v == null || v.trim().isEmpty) {
+                                          return 'Vehicle plate is required';
+                                        }
+                                        return null;
+                                      },
+                                    ),
+                                  ],
+                                )
+                              : const SizedBox.shrink(),
+                        ),
+
                         const SizedBox(height: 24),
 
-                        // Full Name
+                        // ── Common fields ─────────────────────────────────
                         _FieldLabel('Full Name'),
                         const SizedBox(height: 8),
                         TextFormField(
@@ -202,7 +286,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen>
                           textInputAction: TextInputAction.next,
                           decoration: const InputDecoration(
                             hintText: 'Your full name',
-                            prefixIcon: Icon(Icons.person_outline_rounded, size: 20),
+                            prefixIcon:
+                                Icon(Icons.person_outline_rounded, size: 20),
                           ),
                           validator: (v) => v == null || v.trim().isEmpty
                               ? 'Name is required'
@@ -210,7 +295,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen>
                         ),
                         const SizedBox(height: 18),
 
-                        // Email
                         _FieldLabel('Email'),
                         const SizedBox(height: 8),
                         TextFormField(
@@ -222,16 +306,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen>
                             prefixIcon: Icon(Icons.email_outlined, size: 20),
                           ),
                           validator: (v) {
-                            if (v == null || v.trim().isEmpty) {
+                            if (v == null || v.trim().isEmpty)
                               return 'Email is required';
-                            }
                             if (!v.contains('@')) return 'Enter a valid email';
                             return null;
                           },
                         ),
                         const SizedBox(height: 18),
 
-                        // Phone
                         _FieldLabel('Phone Number'),
                         const SizedBox(height: 8),
                         TextFormField(
@@ -248,7 +330,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen>
                         ),
                         const SizedBox(height: 18),
 
-                        // Password
                         _FieldLabel('Password'),
                         const SizedBox(height: 8),
                         TextFormField(
@@ -272,18 +353,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen>
                             ),
                           ),
                           validator: (v) {
-                            if (v == null || v.trim().isEmpty) {
+                            if (v == null || v.trim().isEmpty)
                               return 'Password is required';
-                            }
-                            if (v.length < 6) {
-                              return 'At least 6 characters';
-                            }
+                            if (v.length < 6) return 'At least 6 characters';
                             return null;
                           },
                         ),
                         const SizedBox(height: 18),
 
-                        // Confirm Password
                         _FieldLabel('Confirm Password'),
                         const SizedBox(height: 8),
                         TextFormField(
@@ -293,8 +370,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen>
                           onFieldSubmitted: (_) => _handleRegister(),
                           decoration: InputDecoration(
                             hintText: 'Re-enter your password',
-                            prefixIcon: const Icon(
-                                Icons.lock_outline_rounded, size: 20),
+                            prefixIcon:
+                                const Icon(Icons.lock_outline_rounded, size: 20),
                             suffixIcon: GestureDetector(
                               onTap: () => setState(
                                   () => _obscureConfirm = !_obscureConfirm),
@@ -308,19 +385,17 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen>
                             ),
                           ),
                           validator: (v) {
-                            if (v == null || v.trim().isEmpty) {
+                            if (v == null || v.trim().isEmpty)
                               return 'Please confirm your password';
-                            }
-                            if (v != _passwordController.text) {
+                            if (v != _passwordController.text)
                               return 'Passwords do not match';
-                            }
                             return null;
                           },
                         ),
 
                         const SizedBox(height: 30),
 
-                        // Register Button
+                        // ── Register Button ───────────────────────────────
                         SizedBox(
                           width: double.infinity,
                           height: 54,
@@ -356,7 +431,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen>
 
                         const SizedBox(height: 20),
 
-                        // Login link
+                        // ── Login link ────────────────────────────────────
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -389,6 +464,53 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen>
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildDriverBanner() {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF4A261).withOpacity(0.1),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: const Color(0xFFF4A261).withOpacity(0.4)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF4A261).withOpacity(0.15),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: const Icon(Icons.delivery_dining_rounded,
+                color: Color(0xFFE76F51), size: 20),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Joining as a Driver',
+                  style: GoogleFonts.poppins(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFFE76F51),
+                  ),
+                ),
+                Text(
+                  'Please provide your vehicle details below.',
+                  style: GoogleFonts.inter(
+                    fontSize: 11,
+                    color: AppTheme.textMid,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -437,7 +559,7 @@ class _RoleCard extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
         curve: Curves.easeOutCubic,
-        padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
         decoration: BoxDecoration(
           color: isSelected
               ? AppTheme.primary.withOpacity(0.08)
@@ -451,25 +573,25 @@ class _RoleCard extends StatelessWidget {
         child: Column(
           children: [
             Container(
-              width: 44,
-              height: 44,
+              width: 40,
+              height: 40,
               decoration: BoxDecoration(
                 color: isSelected
                     ? AppTheme.primary.withOpacity(0.12)
                     : AppTheme.divider,
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
                 icon,
-                size: 22,
+                size: 20,
                 color: isSelected ? AppTheme.primary : AppTheme.textLight,
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 8),
             Text(
               label,
               style: GoogleFonts.poppins(
-                fontSize: 14,
+                fontSize: 13,
                 fontWeight: FontWeight.w700,
                 color: isSelected ? AppTheme.primary : AppTheme.textDark,
               ),
@@ -478,9 +600,12 @@ class _RoleCard extends StatelessWidget {
             Text(
               subtitle,
               style: GoogleFonts.inter(
-                fontSize: 11,
+                fontSize: 10,
                 color: isSelected ? AppTheme.primary : AppTheme.textLight,
               ),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),

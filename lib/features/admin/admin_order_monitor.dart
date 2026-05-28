@@ -129,7 +129,7 @@ class _AdminOrderMonitorState extends ConsumerState<AdminOrderMonitor> {
       selected: isSelected,
       onSelected: (_) => setState(() => _currentFilter = filter),
       backgroundColor: AppTheme.surfaceDim,
-      selectedColor: AppTheme.primary.withOpacity(0.15),
+      selectedColor: AppTheme.primary.withValues(alpha: 0.15),
       labelStyle: GoogleFonts.inter(
         color: isSelected ? AppTheme.primaryDark : AppTheme.textMid,
         fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
@@ -209,7 +209,7 @@ class _AdminOrderMonitorState extends ConsumerState<AdminOrderMonitor> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      color: _getStatusColor(order.status).withOpacity(0.1),
+                      color: _getStatusColor(order.status).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Row(
@@ -334,7 +334,7 @@ class _AdminOrderMonitorState extends ConsumerState<AdminOrderMonitor> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: AppTheme.accent.withOpacity(0.1),
+                      color: AppTheme.accent.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
@@ -396,6 +396,9 @@ class _AdminOrderMonitorState extends ConsumerState<AdminOrderMonitor> {
         return AppTheme.success;
       case OrderStatus.cancelled:
         return AppTheme.error;
+      case OrderStatus.outForDelivery:
+        // TODO: Handle this case.
+        throw UnimplementedError();
     }
   }
 

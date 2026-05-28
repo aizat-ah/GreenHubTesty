@@ -18,9 +18,14 @@ service cloud.firestore {
     }
     match /orders/{orderId} {
       allow create: if isLoggedIn();
-      allow read: if isLoggedIn() && (resource.data.customerId == request.auth.uid || hasSupplierAccess());
-      allow update: if hasSupplierAccess();
+      allow read: if isLoggedIn() && (resource.data.customerId == request.auth.uid || hasSupplierAccess() || resource.data.driverId == request.auth.uid);
+      allow update: if hasSupplierAccess() || (isLoggedIn() && resource.data.driverId == request.auth.uid);
       allow delete: if hasSupplierAccess();
+    }
+    match /drivers/{driverId} {
+      allow read: if isLoggedIn();
+      allow create, update: if request.auth.uid == driverId || isAdminUser();
+      allow delete: if isAdminUser();
     }
   }
 }

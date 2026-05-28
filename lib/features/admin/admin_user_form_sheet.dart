@@ -122,7 +122,7 @@ class _AdminUserFormSheetState extends ConsumerState<AdminUserFormSheet> {
                   height: 4,
                   margin: const EdgeInsets.only(bottom: 24),
                   decoration: BoxDecoration(
-                    color: AppTheme.textLight.withOpacity(0.3),
+                    color: AppTheme.textLight.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),

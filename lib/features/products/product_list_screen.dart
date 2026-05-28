@@ -87,7 +87,7 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                                       'Ready to grab some sayur?',
                                       style: GoogleFonts.inter(
                                         fontSize: 14,
-                                        color: Colors.white.withOpacity(0.7),
+                                        color: Colors.white.withValues(alpha: 0.7),
                                       ),
                                     ),
                                   ],
@@ -99,10 +99,10 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                                   width: 44,
                                   height: 44,
                                   decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.15),
+                                    color: Colors.white.withValues(alpha: 0.15),
                                     borderRadius: BorderRadius.circular(14),
                                     border: Border.all(
-                                      color: Colors.white.withOpacity(0.2),
+                                      color: Colors.white.withValues(alpha: 0.2),
                                     ),
                                   ),
                                   child: const Icon(
@@ -120,10 +120,10 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                           // Search bar
                           Container(
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.12),
+                              color: Colors.white.withValues(alpha: 0.12),
                               borderRadius: BorderRadius.circular(16),
                               border: Border.all(
-                                color: Colors.white.withOpacity(0.15),
+                                color: Colors.white.withValues(alpha: 0.15),
                               ),
                             ),
                             child: TextField(
@@ -137,11 +137,11 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                                 hintText: 'Search vegetables...',
                                 hintStyle: GoogleFonts.inter(
                                   fontSize: 14,
-                                  color: Colors.white.withOpacity(0.5),
+                                  color: Colors.white.withValues(alpha: 0.5),
                                 ),
                                 prefixIcon: Icon(
                                   Icons.search_rounded,
-                                  color: Colors.white.withOpacity(0.6),
+                                  color: Colors.white.withValues(alpha: 0.6),
                                   size: 22,
                                 ),
                                 border: InputBorder.none,
@@ -199,7 +199,7 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
                             Icon(
                               Icons.search_off_rounded,
                               size: 56,
-                              color: AppTheme.textLight.withOpacity(0.4),
+                              color: AppTheme.textLight.withValues(alpha: 0.4),
                             ),
                             const SizedBox(height: 12),
                             Text(

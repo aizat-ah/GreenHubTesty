@@ -51,12 +51,12 @@ class AppTheme {
   // ─── Shadows ─────────────────────────────────────────────────────────────────
   static List<BoxShadow> get cardShadow => [
         BoxShadow(
-          color: const Color(0xFF2D6A4F).withOpacity(0.06),
+          color: const Color(0xFF2D6A4F).withValues(alpha: 0.06),
           blurRadius: 16,
           offset: const Offset(0, 4),
         ),
         BoxShadow(
-          color: const Color(0xFF000000).withOpacity(0.03),
+          color: const Color(0xFF000000).withValues(alpha: 0.03),
           blurRadius: 4,
           offset: const Offset(0, 1),
         ),
@@ -64,7 +64,7 @@ class AppTheme {
 
   static List<BoxShadow> get softShadow => [
         BoxShadow(
-          color: const Color(0xFF000000).withOpacity(0.04),
+          color: const Color(0xFF000000).withValues(alpha: 0.04),
           blurRadius: 12,
           offset: const Offset(0, 2),
         ),
@@ -72,12 +72,12 @@ class AppTheme {
 
   static List<BoxShadow> get elevatedShadow => [
         BoxShadow(
-          color: const Color(0xFF2D6A4F).withOpacity(0.12),
+          color: const Color(0xFF2D6A4F).withValues(alpha: 0.12),
           blurRadius: 24,
           offset: const Offset(0, 8),
         ),
         BoxShadow(
-          color: const Color(0xFF000000).withOpacity(0.04),
+          color: const Color(0xFF000000).withValues(alpha: 0.04),
           blurRadius: 8,
           offset: const Offset(0, 2),
         ),
@@ -274,7 +274,7 @@ class AppTheme {
         }),
         trackColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return primary.withOpacity(0.3);
+            return primary.withValues(alpha: 0.3);
           }
           return const Color(0xFFE0E3E7);
         }),

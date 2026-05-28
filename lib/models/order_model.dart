@@ -1,6 +1,6 @@
 // lib/models/order_model.dart
 
-enum OrderStatus { pending, confirmed, completed, cancelled }
+enum OrderStatus { pending, confirmed, outForDelivery, completed, cancelled }
 
 extension OrderStatusExt on OrderStatus {
   String get label {
@@ -9,6 +9,8 @@ extension OrderStatusExt on OrderStatus {
         return 'Pending';
       case OrderStatus.confirmed:
         return 'Confirmed';
+      case OrderStatus.outForDelivery:
+        return 'Out for Delivery';
       case OrderStatus.completed:
         return 'Completed';
       case OrderStatus.cancelled:
@@ -22,6 +24,8 @@ extension OrderStatusExt on OrderStatus {
         return '🕐';
       case OrderStatus.confirmed:
         return '✅';
+      case OrderStatus.outForDelivery:
+        return '🚚';
       case OrderStatus.completed:
         return '🎉';
       case OrderStatus.cancelled:
@@ -79,6 +83,11 @@ class OrderModel {
   final OrderStatus status;
   final String note;
   final DateTime createdAt;
+  // Driver assignment
+  final String? driverId;
+  final String? driverName;
+  final String? driverPhone;
+  final String? driverVehiclePlate;
 
   const OrderModel({
     required this.id,
@@ -90,6 +99,10 @@ class OrderModel {
     required this.status,
     required this.note,
     required this.createdAt,
+    this.driverId,
+    this.driverName,
+    this.driverPhone,
+    this.driverVehiclePlate,
   });
 
   String get formattedTotal => 'RM ${totalPrice.toStringAsFixed(2)}';
@@ -109,6 +122,10 @@ class OrderModel {
       status: _parseStatus(map['status']),
       note: map['note'] ?? '',
       createdAt: _parseDate(map['createdAt']),
+      driverId: map['driverId'],
+      driverName: map['driverName'],
+      driverPhone: map['driverPhone'],
+      driverVehiclePlate: map['driverVehiclePlate'],
     );
   }
 
@@ -122,10 +139,20 @@ class OrderModel {
       'status': status.name,
       'note': note,
       'createdAt': createdAt,
+      if (driverId != null) 'driverId': driverId,
+      if (driverName != null) 'driverName': driverName,
+      if (driverPhone != null) 'driverPhone': driverPhone,
+      if (driverVehiclePlate != null) 'driverVehiclePlate': driverVehiclePlate,
     };
   }
 
-  OrderModel copyWith({OrderStatus? status}) {
+  OrderModel copyWith({
+    OrderStatus? status,
+    String? driverId,
+    String? driverName,
+    String? driverPhone,
+    String? driverVehiclePlate,
+  }) {
     return OrderModel(
       id: id,
       customerId: customerId,
@@ -136,6 +163,10 @@ class OrderModel {
       status: status ?? this.status,
       note: note,
       createdAt: createdAt,
+      driverId: driverId ?? this.driverId,
+      driverName: driverName ?? this.driverName,
+      driverPhone: driverPhone ?? this.driverPhone,
+      driverVehiclePlate: driverVehiclePlate ?? this.driverVehiclePlate,
     );
   }
 
@@ -154,6 +185,8 @@ class OrderModel {
     switch (value) {
       case 'confirmed':
         return OrderStatus.confirmed;
+      case 'outForDelivery':
+        return OrderStatus.outForDelivery;
       case 'completed':
         return OrderStatus.completed;
       case 'cancelled':

@@ -80,7 +80,7 @@ class SupplierDashboard extends ConsumerWidget {
                               width: 42,
                               height: 42,
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.12),
+                                color: Colors.white.withValues(alpha: 0.12),
                                 borderRadius: BorderRadius.circular(13),
                               ),
                               child: const Icon(
@@ -100,7 +100,7 @@ class SupplierDashboard extends ConsumerWidget {
                               : 'Supplier · Store overview',
                           style: GoogleFonts.inter(
                             fontSize: 14,
-                            color: Colors.white.withOpacity(0.65),
+                            color: Colors.white.withValues(alpha: 0.65),
                           ),
                         ),
                         loading: () => const SizedBox.shrink(),
@@ -108,7 +108,7 @@ class SupplierDashboard extends ConsumerWidget {
                           'Supplier · Store overview',
                           style: GoogleFonts.inter(
                             fontSize: 14,
-                            color: Colors.white.withOpacity(0.65),
+                            color: Colors.white.withValues(alpha: 0.65),
                           ),
                         ),
                       ),
@@ -245,7 +245,7 @@ class _StatsGrid extends StatelessWidget {
                 value: 'RM ${revenue.toStringAsFixed(0)}',
                 icon: '💰',
                 color: AppTheme.primary,
-                bg: AppTheme.primary.withOpacity(0.08),
+                bg: AppTheme.primary.withValues(alpha: 0.08),
               ),
             ),
           ],
@@ -275,7 +275,7 @@ class _StatCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.08),
+            color: color.withValues(alpha: 0.08),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -301,7 +301,7 @@ class _StatCard extends StatelessWidget {
                   label,
                   style: GoogleFonts.inter(
                     fontSize: 11,
-                    color: color.withOpacity(0.75),
+                    color: color.withValues(alpha: 0.75),
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -343,7 +343,7 @@ class _QuickActionTile extends StatelessWidget {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: AppTheme.primary.withOpacity(0.08),
+                color: AppTheme.primary.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(15),
               ),
               child: Icon(icon, color: AppTheme.primary, size: 24),

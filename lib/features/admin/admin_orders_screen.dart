@@ -182,7 +182,7 @@ class _StatusFilterBar extends StatelessWidget {
                 boxShadow: isSelected
                     ? [
                         BoxShadow(
-                          color: AppTheme.primary.withOpacity(0.25),
+                          color: AppTheme.primary.withValues(alpha: 0.25),
                           blurRadius: 8,
                           offset: const Offset(0, 3),
                         ),
@@ -207,7 +207,7 @@ class _StatusFilterBar extends StatelessWidget {
                     ),
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? Colors.white.withOpacity(0.25)
+                          ? Colors.white.withValues(alpha: 0.25)
                           : AppTheme.surfaceDim,
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -246,7 +246,7 @@ class _AdminOrderCard extends ConsumerWidget {
         boxShadow: AppTheme.cardShadow,
         border: order.status == OrderStatus.pending
             ? Border.all(
-                color: const Color(0xFFF4A261).withOpacity(0.5),
+                color: const Color(0xFFF4A261).withValues(alpha: 0.5),
                 width: 1.5,
               )
             : null,
@@ -339,7 +339,7 @@ class _AdminOrderCard extends ConsumerWidget {
             ),
           ),
 
-          Divider(color: AppTheme.divider.withOpacity(0.6), height: 1),
+          Divider(color: AppTheme.divider.withValues(alpha: 0.6), height: 1),
 
           // Order items
           Padding(
@@ -409,7 +409,7 @@ class _AdminOrderCard extends ConsumerWidget {
             ),
           ),
 
-          Divider(color: AppTheme.divider.withOpacity(0.6), height: 1),
+          Divider(color: AppTheme.divider.withValues(alpha: 0.6), height: 1),
 
           // Footer: total + actions
           Padding(
@@ -582,9 +582,9 @@ class _StatusOption extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: _color.withOpacity(0.06),
+          color: _color.withValues(alpha: 0.06),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: _color.withOpacity(0.2)),
+          border: Border.all(color: _color.withValues(alpha: 0.2)),
         ),
         child: Row(
           children: [
@@ -629,7 +629,7 @@ class _ActionButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.08),
+          color: color.withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Row(
@@ -666,6 +666,9 @@ class _StatusBadge extends StatelessWidget {
         return const Color(0xFFE3F2FD);
       case OrderStatus.cancelled:
         return const Color(0xFFFFEBEE);
+      case OrderStatus.outForDelivery:
+        // TODO: Handle this case.
+        throw UnimplementedError();
     }
   }
 
@@ -679,6 +682,9 @@ class _StatusBadge extends StatelessWidget {
         return const Color(0xFF1565C0);
       case OrderStatus.cancelled:
         return const Color(0xFFC62828);
+      case OrderStatus.outForDelivery:
+        // TODO: Handle this case.
+        throw UnimplementedError();
     }
   }
 
@@ -723,7 +729,7 @@ class _EmptyOrders extends StatelessWidget {
             child: Icon(
               Icons.receipt_long_outlined,
               size: 40,
-              color: AppTheme.textLight.withOpacity(0.4),
+              color: AppTheme.textLight.withValues(alpha: 0.4),
             ),
           ),
           const SizedBox(height: 18),

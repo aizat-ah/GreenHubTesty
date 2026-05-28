@@ -15,9 +15,12 @@ import '../features/orders/my_orders_screen.dart';
 import '../features/admin/admin_dashboard.dart';
 import '../features/admin/admin_user_management.dart';
 import '../features/admin/admin_order_monitor.dart';
+import '../features/admin/admin_driver_management.dart';
+import '../features/admin/admin_assign_driver_screen.dart';
 import '../features/admin/manage_products_screen.dart';
 import '../features/supplier/supplier_dashboard.dart';
 import '../features/supplier/supplier_orders_screen.dart';
+import '../features/driver/driver_dashboard.dart';
 import '../features/profile/profile_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -44,10 +47,52 @@ final routerProvider = Provider<GoRouter>((ref) {
         return '/login';
       }
 
-      if (isLoggedIn && (isAuthPage || isSplashPage)) {
-        if (user?.isAdmin == true) return '/admin';
-        if (user?.isSupplier == true) return '/supplier';
-        return '/home';
+      // Logged in but Firestore user document is missing/null —
+      // sign out to prevent getting stuck on the splash screen forever.
+      if (isLoggedIn && user == null) {
+        ref.read(authNotifierProvider.notifier).signOut();
+        return '/login';
+      }
+
+      final location = state.matchedLocation;
+      String targetHome;
+      bool isAllowed;
+
+      if (user?.isAdmin == true) {
+        targetHome = '/admin';
+        isAllowed = location.startsWith('/admin') ||
+            location == '/profile' ||
+            isSplashPage ||
+            isAuthPage;
+      } else if (user?.isSupplier == true) {
+        targetHome = '/supplier';
+        isAllowed = location.startsWith('/supplier') ||
+            location == '/profile' ||
+            isSplashPage ||
+            isAuthPage;
+      } else if (user?.isDriver == true) {
+        targetHome = '/driver';
+        isAllowed = location.startsWith('/driver') ||
+            location == '/profile' ||
+            isSplashPage ||
+            isAuthPage;
+      } else {
+        // Default to buyer
+        targetHome = '/home';
+        final isBuyerPath = location == '/home' ||
+            location == '/products' ||
+            location == '/cart' ||
+            location == '/checkout' ||
+            location == '/order-success' ||
+            location == '/orders';
+        isAllowed = isBuyerPath ||
+            location == '/profile' ||
+            isSplashPage ||
+            isAuthPage;
+      }
+
+      if (!isAllowed || isAuthPage || isSplashPage) {
+        return targetHome;
       }
 
       return null;
@@ -144,6 +189,22 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/admin/products',
         pageBuilder: (context, state) =>
             _buildSmoothPage(state, const ManageProductsScreen()),
+      ),
+      GoRoute(
+        path: '/admin/drivers',
+        pageBuilder: (context, state) =>
+            _buildSmoothPage(state, const AdminDriverManagement()),
+      ),
+      GoRoute(
+        path: '/admin/assign-driver',
+        pageBuilder: (context, state) =>
+            _buildSmoothPage(state, const AdminAssignDriverScreen()),
+      ),
+      // ── Driver ────────────────────────────────────────────────────────────
+      GoRoute(
+        path: '/driver',
+        pageBuilder: (context, state) =>
+            _buildSmoothPage(state, const DriverDashboard()),
       ),
     ],
     errorBuilder: (context, state) =>

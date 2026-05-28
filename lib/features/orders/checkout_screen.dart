@@ -161,7 +161,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                           padding: const EdgeInsets.symmetric(
                               vertical: 12, horizontal: 14),
                           decoration: BoxDecoration(
-                            color: AppTheme.primary.withOpacity(0.06),
+                            color: AppTheme.primary.withValues(alpha: 0.06),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Row(
@@ -224,7 +224,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
               color: AppTheme.surface,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.06),
+                  color: Colors.black.withValues(alpha: 0.06),
                   blurRadius: 16,
                   offset: const Offset(0, -4),
                 ),
@@ -236,7 +236,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
               child: ElevatedButton(
                 onPressed: isLoading ? null : _placeOrder,
                 style: ElevatedButton.styleFrom(
-                  disabledBackgroundColor: AppTheme.primary.withOpacity(0.6),
+                  disabledBackgroundColor: AppTheme.primary.withValues(alpha: 0.6),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
@@ -272,7 +272,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
 
   Widget _divider() => Padding(
         padding: const EdgeInsets.symmetric(vertical: 10),
-        child: Divider(color: AppTheme.divider.withOpacity(0.6), height: 1),
+        child: Divider(color: AppTheme.divider.withValues(alpha: 0.6), height: 1),
       );
 }
 

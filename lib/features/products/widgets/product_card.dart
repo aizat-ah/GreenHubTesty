@@ -60,7 +60,7 @@ class ProductCard extends StatelessWidget {
                               end: Alignment.bottomCenter,
                               colors: [
                                 Colors.transparent,
-                                Colors.black.withOpacity(0.05),
+                                Colors.black.withValues(alpha: 0.05),
                               ],
                             ),
                           ),
@@ -74,7 +74,7 @@ class ProductCard extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 8, vertical: 3),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.92),
+                            color: Colors.white.withValues(alpha: 0.92),
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(
@@ -151,7 +151,7 @@ class ProductCard extends StatelessWidget {
                               borderRadius: BorderRadius.circular(11),
                               boxShadow: [
                                 BoxShadow(
-                                  color: AppTheme.primary.withOpacity(0.3),
+                                  color: AppTheme.primary.withValues(alpha: 0.3),
                                   blurRadius: 8,
                                   offset: const Offset(0, 3),
                                 ),

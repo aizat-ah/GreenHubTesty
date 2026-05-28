@@ -56,7 +56,7 @@ class ManageProductsScreen extends ConsumerWidget {
                     child: Icon(
                       Icons.eco_rounded,
                       size: 40,
-                      color: AppTheme.textLight.withOpacity(0.4),
+                      color: AppTheme.textLight.withValues(alpha: 0.4),
                     ),
                   ),
                   const SizedBox(height: 18),
@@ -107,7 +107,7 @@ class ManageProductsScreen extends ConsumerWidget {
                             vertical: 4,
                           ),
                           decoration: BoxDecoration(
-                            color: AppTheme.primary.withOpacity(0.08),
+                            color: AppTheme.primary.withValues(alpha: 0.08),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
@@ -287,7 +287,7 @@ class _ProductTile extends StatelessWidget {
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: AppTheme.textLight.withOpacity(0.1),
+                            color: AppTheme.textLight.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(

@@ -49,7 +49,7 @@ class MyOrdersScreen extends ConsumerWidget {
                     child: Icon(
                       Icons.receipt_long_outlined,
                       size: 40,
-                      color: AppTheme.textLight.withOpacity(0.4),
+                      color: AppTheme.textLight.withValues(alpha: 0.4),
                     ),
                   ),
                   const SizedBox(height: 18),
@@ -116,7 +116,7 @@ class _OrderCard extends StatelessWidget {
                   width: 36,
                   height: 36,
                   decoration: BoxDecoration(
-                    color: _statusColor(order.status).withOpacity(0.1),
+                    color: _statusColor(order.status).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(11),
                   ),
                   child: Center(
@@ -156,7 +156,7 @@ class _OrderCard extends StatelessWidget {
             ),
           ),
 
-          Divider(color: AppTheme.divider.withOpacity(0.6), height: 1),
+          Divider(color: AppTheme.divider.withValues(alpha: 0.6), height: 1),
 
           // Items
           Padding(
@@ -205,7 +205,7 @@ class _OrderCard extends StatelessWidget {
             ),
           ),
 
-          Divider(color: AppTheme.divider.withOpacity(0.6), height: 1),
+          Divider(color: AppTheme.divider.withValues(alpha: 0.6), height: 1),
 
           // Footer
           Padding(
@@ -236,7 +236,7 @@ class _OrderCard extends StatelessWidget {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF25D366).withOpacity(0.1),
+                      color: const Color(0xFF25D366).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Row(
@@ -274,6 +274,9 @@ class _OrderCard extends StatelessWidget {
         return const Color(0xFF1565C0);
       case OrderStatus.cancelled:
         return const Color(0xFFC62828);
+      case OrderStatus.outForDelivery:
+        // TODO: Handle this case.
+        throw UnimplementedError();
     }
   }
 }
@@ -293,6 +296,9 @@ class _StatusBadge extends StatelessWidget {
         return const Color(0xFFE3F2FD);
       case OrderStatus.cancelled:
         return const Color(0xFFFFEBEE);
+      case OrderStatus.outForDelivery:
+        // TODO: Handle this case.
+        throw UnimplementedError();
     }
   }
 
@@ -306,6 +312,9 @@ class _StatusBadge extends StatelessWidget {
         return const Color(0xFF1565C0);
       case OrderStatus.cancelled:
         return const Color(0xFFC62828);
+      case OrderStatus.outForDelivery:
+        // TODO: Handle this case.
+        throw UnimplementedError();
     }
   }
 

@@ -57,7 +57,7 @@ class CartScreen extends ConsumerWidget {
                     child: Icon(
                       Icons.shopping_basket_outlined,
                       size: 44,
-                      color: AppTheme.textLight.withOpacity(0.4),
+                      color: AppTheme.textLight.withValues(alpha: 0.4),
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -117,7 +117,7 @@ class CartScreen extends ConsumerWidget {
                           alignment: Alignment.centerRight,
                           padding: const EdgeInsets.only(right: 24),
                           decoration: BoxDecoration(
-                            color: AppTheme.error.withOpacity(0.1),
+                            color: AppTheme.error.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: const Icon(
@@ -253,7 +253,7 @@ class CartScreen extends ConsumerWidget {
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.06),
+                        color: Colors.black.withValues(alpha: 0.06),
                         blurRadius: 16,
                         offset: const Offset(0, -4),
                       ),

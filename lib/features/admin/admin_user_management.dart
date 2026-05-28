@@ -9,7 +9,7 @@ import '../../services/admin_service.dart';
 import 'package:intl/intl.dart';
 import 'admin_user_form_sheet.dart';
 
-enum _UserFilter { all, buyer, supplier, admin }
+enum _UserFilter { all, buyer, supplier, admin, driver }
 
 class AdminUserManagement extends ConsumerStatefulWidget {
   const AdminUserManagement({super.key});
@@ -95,6 +95,8 @@ class _AdminUserManagementState extends ConsumerState<AdminUserManagement> {
                 _buildChip(_UserFilter.supplier, 'Supplier'),
                 const SizedBox(width: 8),
                 _buildChip(_UserFilter.admin, 'Admin'),
+                const SizedBox(width: 8),
+                _buildChip(_UserFilter.driver, 'Driver'),
               ],
             ),
           ),
@@ -110,7 +112,7 @@ class _AdminUserManagementState extends ConsumerState<AdminUserManagement> {
       selected: isSelected,
       onSelected: (_) => setState(() => _currentFilter = filter),
       backgroundColor: AppTheme.surfaceDim,
-      selectedColor: AppTheme.primary.withOpacity(0.15),
+      selectedColor: AppTheme.primary.withValues(alpha: 0.15),
       labelStyle: GoogleFonts.inter(
         color: isSelected ? AppTheme.primaryDark : AppTheme.textMid,
         fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
@@ -127,7 +129,8 @@ class _AdminUserManagementState extends ConsumerState<AdminUserManagement> {
       final matchesRole = _currentFilter == _UserFilter.all ||
           (_currentFilter == _UserFilter.buyer && user.role == UserRole.buyer) ||
           (_currentFilter == _UserFilter.supplier && user.role == UserRole.supplier) ||
-          (_currentFilter == _UserFilter.admin && user.role == UserRole.admin);
+          (_currentFilter == _UserFilter.admin && user.role == UserRole.admin) ||
+          (_currentFilter == _UserFilter.driver && user.role == UserRole.driver);
 
       return matchesSearch && matchesRole;
     }).toList();
@@ -163,7 +166,7 @@ class _AdminUserManagementState extends ConsumerState<AdminUserManagement> {
           child: Row(
             children: [
               CircleAvatar(
-                backgroundColor: _getRoleColor(user.role).withOpacity(0.1),
+                backgroundColor: _getRoleColor(user.role).withValues(alpha: 0.1),
                 radius: 24,
                 child: Text(
                   user.name.isNotEmpty ? user.name[0].toUpperCase() : '?',
@@ -236,6 +239,8 @@ class _AdminUserManagementState extends ConsumerState<AdminUserManagement> {
         return AppTheme.accent;
       case UserRole.admin:
         return AppTheme.error;
+      case UserRole.driver:
+        return AppTheme.info;
     }
   }
 
@@ -244,7 +249,7 @@ class _AdminUserManagementState extends ConsumerState<AdminUserManagement> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(

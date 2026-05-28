@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_theme.dart';
 import '../../providers/auth_provider.dart';
+import '../../models/user_models.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -60,6 +61,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<AsyncValue<UserModel?>>(currentUserProvider, (previous, next) {
+      if (next.hasValue && next.value != null) {
+        final user = next.value!;
+        if (!_isEditing) {
+          _nameController.text = user.name;
+          _phoneController.text = user.phone;
+        }
+      }
+    });
+
     final userAsync = ref.watch(currentUserProvider);
     final authState = ref.watch(authNotifierProvider);
 
@@ -100,7 +111,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                   width: 40,
                                   height: 40,
                                   decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.12),
+                                    color: Colors.white.withValues(alpha: 0.12),
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: const Icon(
@@ -132,7 +143,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                   width: 40,
                                   height: 40,
                                   decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.12),
+                                    color: Colors.white.withValues(alpha: 0.12),
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: Icon(
@@ -164,13 +175,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     border: Border.all(
-                                        color: Colors.white.withOpacity(0.5),
+                                        color: Colors.white.withValues(alpha: 0.5),
                                         width: 2),
                                   ),
                                   child: CircleAvatar(
                                     radius: 50,
                                     backgroundColor:
-                                        Colors.white.withOpacity(0.15),
+                                        Colors.white.withValues(alpha: 0.15),
                                     backgroundImage: user.photoUrl != null
                                         ? CachedNetworkImageProvider(
                                             user.photoUrl!)
@@ -215,7 +226,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                         boxShadow: [
                                           BoxShadow(
                                             color:
-                                                Colors.black.withOpacity(0.15),
+                                                Colors.black.withValues(alpha: 0.15),
                                             blurRadius: 6,
                                           ),
                                         ],
@@ -245,7 +256,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 12, vertical: 4),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.15),
+                              color: Colors.white.withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Text(
@@ -253,7 +264,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               style: GoogleFonts.inter(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w700,
-                                color: Colors.white.withOpacity(0.85),
+                                color: Colors.white.withValues(alpha: 0.85),
                                 letterSpacing: 1.2,
                               ),
                             ),

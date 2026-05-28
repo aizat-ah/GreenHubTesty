@@ -81,7 +81,7 @@ class _ProductDetailSheetState extends State<ProductDetailSheet> {
                                   end: Alignment.bottomCenter,
                                   colors: [
                                     Colors.transparent,
-                                    Colors.black.withOpacity(0.15),
+                                    Colors.black.withValues(alpha: 0.15),
                                   ],
                                 ),
                               ),
@@ -102,7 +102,7 @@ class _ProductDetailSheetState extends State<ProductDetailSheet> {
                           vertical: 5,
                         ),
                         decoration: BoxDecoration(
-                          color: AppTheme.primary.withOpacity(0.08),
+                          color: AppTheme.primary.withValues(alpha: 0.08),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
@@ -122,7 +122,7 @@ class _ProductDetailSheetState extends State<ProductDetailSheet> {
                             vertical: 5,
                           ),
                           decoration: BoxDecoration(
-                            color: AppTheme.error.withOpacity(0.08),
+                            color: AppTheme.error.withValues(alpha: 0.08),
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(
@@ -245,7 +245,7 @@ class _ProductDetailSheetState extends State<ProductDetailSheet> {
                 color: AppTheme.surface,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 10,
                     offset: const Offset(0, -4),
                   ),

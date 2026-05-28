@@ -120,7 +120,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                       'Sign in to your account',
                       style: GoogleFonts.inter(
                         fontSize: 14,
-                        color: Colors.white.withOpacity(0.7),
+                        color: Colors.white.withValues(alpha: 0.7),
                       ),
                     ),
                   ],
@@ -221,7 +221,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppTheme.primary,
                               disabledBackgroundColor:
-                                  AppTheme.primary.withOpacity(0.6),
+                                  AppTheme.primary.withValues(alpha: 0.6),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16),
                               ),

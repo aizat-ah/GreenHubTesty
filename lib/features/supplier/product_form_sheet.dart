@@ -469,7 +469,7 @@ class _ProductFormSheetState extends ConsumerState<ProductFormSheet> {
               child: ElevatedButton(
                 onPressed: _isSaving ? null : _save,
                 style: ElevatedButton.styleFrom(
-                  disabledBackgroundColor: AppTheme.primary.withOpacity(0.6),
+                  disabledBackgroundColor: AppTheme.primary.withValues(alpha: 0.6),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
@@ -593,7 +593,7 @@ class _ImagePicker extends StatelessWidget {
                   child: Container(
                     padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.6),
+                      color: Colors.black.withValues(alpha: 0.6),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
