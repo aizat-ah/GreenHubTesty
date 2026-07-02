@@ -1,5 +1,3 @@
-// lib/models/order_model.dart
-
 enum OrderStatus { pending, confirmed, outForDelivery, completed, cancelled }
 
 extension OrderStatusExt on OrderStatus {
@@ -31,6 +29,70 @@ extension OrderStatusExt on OrderStatus {
       case OrderStatus.cancelled:
         return '❌';
     }
+  }
+}
+
+/// Granular delivery milestones — this is what satisfies SRS UC019
+/// ("Picked Up / En Route / Delivered") and gives the buyer something
+/// real to look at on the tracking screen.
+enum DeliveryStage { assigned, pickedUp, enRoute, delivered }
+
+extension DeliveryStageExt on DeliveryStage {
+  String get label {
+    switch (this) {
+      case DeliveryStage.assigned:
+        return 'Driver Assigned';
+      case DeliveryStage.pickedUp:
+        return 'Picked Up';
+      case DeliveryStage.enRoute:
+        return 'On The Way';
+      case DeliveryStage.delivered:
+        return 'Delivered';
+    }
+  }
+
+  String get description {
+    switch (this) {
+      case DeliveryStage.assigned:
+        return 'A driver has been assigned to your order.';
+      case DeliveryStage.pickedUp:
+        return 'Your order has been picked up from the supplier.';
+      case DeliveryStage.enRoute:
+        return 'Your driver is on the way to you.';
+      case DeliveryStage.delivered:
+        return 'Your order has been delivered. Enjoy!';
+    }
+  }
+
+  int get step => DeliveryStage.values.indexOf(this); // 0..3, for progress UI
+
+  static DeliveryStage fromName(String? value) {
+    return DeliveryStage.values.firstWhere(
+      (e) => e.name == value,
+      orElse: () => DeliveryStage.assigned,
+    );
+  }
+}
+
+enum PaymentMethod { cashOnDelivery, cardStripe }
+
+extension PaymentMethodExt on PaymentMethod {
+  String get label {
+    switch (this) {
+      case PaymentMethod.cashOnDelivery:
+        return 'Cash on Delivery';
+      case PaymentMethod.cardStripe:
+        return 'Card (coming soon)';
+    }
+  }
+
+  bool get isAvailable => this == PaymentMethod.cashOnDelivery;
+
+  static PaymentMethod fromName(String? value) {
+    return PaymentMethod.values.firstWhere(
+      (e) => e.name == value,
+      orElse: () => PaymentMethod.cashOnDelivery,
+    );
   }
 }
 
@@ -88,6 +150,10 @@ class OrderModel {
   final String? driverName;
   final String? driverPhone;
   final String? driverVehiclePlate;
+  // NEW: granular tracking + payment
+  final DeliveryStage? deliveryStage;
+  final PaymentMethod paymentMethod;
+  final bool isPaid;
 
   const OrderModel({
     required this.id,
@@ -103,11 +169,16 @@ class OrderModel {
     this.driverName,
     this.driverPhone,
     this.driverVehiclePlate,
+    this.deliveryStage,
+    this.paymentMethod = PaymentMethod.cashOnDelivery,
+    this.isPaid = false,
   });
 
   String get formattedTotal => 'RM ${totalPrice.toStringAsFixed(2)}';
 
   int get totalItems => items.fold(0, (sum, i) => sum + i.quantity);
+
+  bool get hasDriver => driverId != null && driverId!.isNotEmpty;
 
   factory OrderModel.fromMap(Map<String, dynamic> map, String id) {
     return OrderModel(
@@ -126,6 +197,11 @@ class OrderModel {
       driverName: map['driverName'],
       driverPhone: map['driverPhone'],
       driverVehiclePlate: map['driverVehiclePlate'],
+      deliveryStage: map['deliveryStage'] != null
+          ? DeliveryStageExt.fromName(map['deliveryStage'])
+          : null,
+      paymentMethod: PaymentMethodExt.fromName(map['paymentMethod']),
+      isPaid: map['isPaid'] ?? false,
     );
   }
 
@@ -139,10 +215,13 @@ class OrderModel {
       'status': status.name,
       'note': note,
       'createdAt': createdAt,
+      'paymentMethod': paymentMethod.name,
+      'isPaid': isPaid,
       if (driverId != null) 'driverId': driverId,
       if (driverName != null) 'driverName': driverName,
       if (driverPhone != null) 'driverPhone': driverPhone,
       if (driverVehiclePlate != null) 'driverVehiclePlate': driverVehiclePlate,
+      if (deliveryStage != null) 'deliveryStage': deliveryStage!.name,
     };
   }
 
@@ -152,6 +231,9 @@ class OrderModel {
     String? driverName,
     String? driverPhone,
     String? driverVehiclePlate,
+    DeliveryStage? deliveryStage,
+    PaymentMethod? paymentMethod,
+    bool? isPaid,
   }) {
     return OrderModel(
       id: id,
@@ -167,6 +249,9 @@ class OrderModel {
       driverName: driverName ?? this.driverName,
       driverPhone: driverPhone ?? this.driverPhone,
       driverVehiclePlate: driverVehiclePlate ?? this.driverVehiclePlate,
+      deliveryStage: deliveryStage ?? this.deliveryStage,
+      paymentMethod: paymentMethod ?? this.paymentMethod,
+      isPaid: isPaid ?? this.isPaid,
     );
   }
 

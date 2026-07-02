@@ -475,8 +475,9 @@ class _AdminOrderCard extends ConsumerWidget {
             'Hi ${order.customerName}, we\'re sorry but your order #$shortId (${order.formattedTotal}) has been cancelled. Please contact us if you have any questions. 🙏';
         break;
       case OrderStatus.outForDelivery:
-        // TODO: Handle this case.
-        throw UnimplementedError();
+        messageText =
+            'Hi ${order.customerName}, good news! Your order #$shortId (${order.formattedTotal}) is now out for delivery 🚚. It\'ll be with you shortly!';
+        break;
     }
 
     final msg = Uri.encodeComponent(messageText);
@@ -690,8 +691,7 @@ class _StatusBadge extends StatelessWidget {
       case OrderStatus.cancelled:
         return const Color(0xFFFFEBEE);
       case OrderStatus.outForDelivery:
-        // TODO: Handle this case.
-        throw UnimplementedError();
+        return const Color(0xFFF3E5F5);
     }
   }
 
@@ -706,8 +706,7 @@ class _StatusBadge extends StatelessWidget {
       case OrderStatus.cancelled:
         return const Color(0xFFC62828);
       case OrderStatus.outForDelivery:
-        // TODO: Handle this case.
-        throw UnimplementedError();
+        return const Color(0xFF6A1B9A);
     }
   }
 

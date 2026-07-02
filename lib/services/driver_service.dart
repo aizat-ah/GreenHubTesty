@@ -161,7 +161,7 @@ class DriverService {
     await batch.commit();
   }
 
-  // ── Driver's own orders ───────────────────────────────────────────────────
+// ── Driver's own orders ───────────────────────────────────────────────────
 
   Stream<List<OrderModel>> driverOrdersStream(String driverId) {
     return _orders

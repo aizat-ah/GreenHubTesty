@@ -144,7 +144,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen>
                       'Join GreenHub today',
                       style: GoogleFonts.inter(
                         fontSize: 14,
-                        color: Colors.white.withOpacity(0.7),
+                        color: Colors.white.withValues(alpha: 0.7),
                       ),
                     ),
                   ],
@@ -225,7 +225,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen>
                                     _FieldLabel('Vehicle Type'),
                                     const SizedBox(height: 8),
                                     DropdownButtonFormField<String>(
-                                      value: _selectedVehicleType,
+                                      initialValue: _selectedVehicleType,
                                       decoration: InputDecoration(
                                         prefixIcon: const Icon(
                                             Icons.two_wheeler_outlined,
@@ -262,8 +262,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen>
                                             size: 20),
                                       ),
                                       validator: (v) {
-                                        if (_selectedRole != UserRole.driver)
+                                        if (_selectedRole != UserRole.driver) {
                                           return null;
+                                        }
                                         if (v == null || v.trim().isEmpty) {
                                           return 'Vehicle plate is required';
                                         }
@@ -306,8 +307,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen>
                             prefixIcon: Icon(Icons.email_outlined, size: 20),
                           ),
                           validator: (v) {
-                            if (v == null || v.trim().isEmpty)
+                            if (v == null || v.trim().isEmpty) {
                               return 'Email is required';
+                            }
                             if (!v.contains('@')) return 'Enter a valid email';
                             return null;
                           },
@@ -353,8 +355,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen>
                             ),
                           ),
                           validator: (v) {
-                            if (v == null || v.trim().isEmpty)
+                            if (v == null || v.trim().isEmpty) {
                               return 'Password is required';
+                            }
                             if (v.length < 6) return 'At least 6 characters';
                             return null;
                           },
@@ -385,10 +388,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen>
                             ),
                           ),
                           validator: (v) {
-                            if (v == null || v.trim().isEmpty)
+                            if (v == null || v.trim().isEmpty) {
                               return 'Please confirm your password';
-                            if (v != _passwordController.text)
+                            }
+                            if (v != _passwordController.text) {
                               return 'Passwords do not match';
+                            }
                             return null;
                           },
                         ),
@@ -405,7 +410,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen>
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppTheme.primary,
                               disabledBackgroundColor:
-                                  AppTheme.primary.withOpacity(0.6),
+                                  AppTheme.primary.withValues(alpha: 0.6),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16),
                               ),
@@ -472,16 +477,16 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen>
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFFF4A261).withOpacity(0.1),
+        color: const Color(0xFFF4A261).withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFFF4A261).withOpacity(0.4)),
+        border: Border.all(color: const Color(0xFFF4A261).withValues(alpha: 0.4)),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: const Color(0xFFF4A261).withOpacity(0.15),
+              color: const Color(0xFFF4A261).withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(10),
             ),
             child: const Icon(Icons.delivery_dining_rounded,
@@ -562,7 +567,7 @@ class _RoleCard extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
         decoration: BoxDecoration(
           color: isSelected
-              ? AppTheme.primary.withOpacity(0.08)
+              ? AppTheme.primary.withValues(alpha: 0.08)
               : AppTheme.surfaceDim,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
@@ -577,7 +582,7 @@ class _RoleCard extends StatelessWidget {
               height: 40,
               decoration: BoxDecoration(
                 color: isSelected
-                    ? AppTheme.primary.withOpacity(0.12)
+                    ? AppTheme.primary.withValues(alpha: 0.12)
                     : AppTheme.divider,
                 borderRadius: BorderRadius.circular(12),
               ),

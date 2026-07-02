@@ -397,8 +397,7 @@ class _AdminOrderMonitorState extends ConsumerState<AdminOrderMonitor> {
       case OrderStatus.cancelled:
         return AppTheme.error;
       case OrderStatus.outForDelivery:
-        // TODO: Handle this case.
-        throw UnimplementedError();
+        return AppTheme.primary;
     }
   }
 

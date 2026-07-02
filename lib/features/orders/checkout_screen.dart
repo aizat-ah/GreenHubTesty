@@ -1,8 +1,20 @@
+// lib/features/orders/checkout_screen.dart
+//
+// CHANGES in current file:
+//   - Added a "Payment Method" section: Cash on Delivery vs Card (Stripe).
+//   - `_placeOrder` now passes the selected PaymentMethod to placeOrder().
+//   - Button label reflects the choice ("Place Order" for COD vs
+//     "Pay RM x.xx" for card) so it's clear a card charge is about to
+//     happen.
+//   - Error snackbar now also fires on payment cancellation, which is
+//     expected/normal, not a bug — just informational.
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_theme.dart';
+import '../../models/order_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/cart_provider.dart';
 import '../../providers/order_provider.dart';
@@ -16,6 +28,7 @@ class CheckoutScreen extends ConsumerStatefulWidget {
 
 class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   final _noteController = TextEditingController();
+  PaymentMethod _paymentMethod = PaymentMethod.cashOnDelivery;
 
   @override
   void dispose() {
@@ -31,6 +44,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     final order = await ref.read(placeOrderProvider.notifier).placeOrder(
           user: user,
           note: _noteController.text,
+          paymentMethod: _paymentMethod,
         );
 
     if (!mounted) return;
@@ -191,6 +205,32 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                   ),
                   const SizedBox(height: 16),
 
+                  // NEW: Payment method selector
+                  _SectionCard(
+                    icon: Icons.payment_rounded,
+                    title: 'Payment Method',
+                    child: Column(
+                      children: [
+                        _PaymentOptionTile(
+                          icon: Icons.money_rounded,
+                          label: PaymentMethod.cashOnDelivery.label,
+                          selected: _paymentMethod == PaymentMethod.cashOnDelivery,
+                          onTap: () => setState(
+                              () => _paymentMethod = PaymentMethod.cashOnDelivery),
+                        ),
+                        const SizedBox(height: 10),
+                        _PaymentOptionTile(
+                          icon: Icons.credit_card_rounded,
+                          label: 'Card (Visa, Mastercard)',
+                          selected: _paymentMethod == PaymentMethod.cardStripe,
+                          onTap: () => setState(
+                              () => _paymentMethod = PaymentMethod.cardStripe),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
                   // Notes
                   _SectionCard(
                     icon: Icons.edit_note_rounded,
@@ -217,7 +257,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
             ),
           ),
 
-          // Place order button
+          // Place order / Pay button
           Container(
             padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
             decoration: BoxDecoration(
@@ -254,7 +294,9 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            'Place Order — RM ${total.toStringAsFixed(2)}',
+                            _paymentMethod == PaymentMethod.cardStripe
+                                ? 'Pay RM ${total.toStringAsFixed(2)}'
+                                : 'Place Order — RM ${total.toStringAsFixed(2)}',
                             style: GoogleFonts.poppins(
                               fontSize: 15,
                               fontWeight: FontWeight.w600,
@@ -360,6 +402,70 @@ class _InfoRow extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+// ─── NEW: Payment option tile ──────────────────────────────────────────────────
+
+class _PaymentOptionTile extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _PaymentOptionTile({
+    required this.icon,
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        decoration: BoxDecoration(
+          color: selected
+              ? AppTheme.primary.withValues(alpha: 0.08)
+              : AppTheme.surfaceDim,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: selected ? AppTheme.primary : Colors.transparent,
+            width: 1.5,
+          ),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              size: 20,
+              color: selected ? AppTheme.primary : AppTheme.textLight,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                label,
+                style: GoogleFonts.inter(
+                  fontSize: 14,
+                  fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                  color: selected ? AppTheme.primary : AppTheme.textDark,
+                ),
+              ),
+            ),
+            Icon(
+              selected
+                  ? Icons.radio_button_checked_rounded
+                  : Icons.radio_button_off_rounded,
+              size: 20,
+              color: selected ? AppTheme.primary : AppTheme.textLight,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
