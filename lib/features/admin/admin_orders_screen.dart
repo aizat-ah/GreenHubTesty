@@ -667,8 +667,7 @@ class _StatusBadge extends StatelessWidget {
       case OrderStatus.cancelled:
         return const Color(0xFFFFEBEE);
       case OrderStatus.outForDelivery:
-        // TODO: Handle this case.
-        throw UnimplementedError();
+        return const Color(0xFFF3E5F5);
     }
   }
 
@@ -683,8 +682,7 @@ class _StatusBadge extends StatelessWidget {
       case OrderStatus.cancelled:
         return const Color(0xFFC62828);
       case OrderStatus.outForDelivery:
-        // TODO: Handle this case.
-        throw UnimplementedError();
+        return const Color(0xFF6A1B9A);
     }
   }
 

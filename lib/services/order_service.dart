@@ -51,4 +51,18 @@ class OrderService {
   Future<void> updateStatus(String orderId, OrderStatus status) async {
     await _orders.doc(orderId).update({'status': status.name});
   }
+
+  // NEW: called after Stripe confirms payment succeeded.
+  Future<void> markPaid(String orderId) async {
+    await _orders.doc(orderId).update({
+      'isPaid': true,
+      'status': OrderStatus.confirmed.name,
+    });
+  }
+
+  // NEW: called if Stripe payment fails/cancels, to clean up the
+  // pending order created just before the payment sheet was shown.
+  Future<void> deleteOrder(String orderId) async {
+    await _orders.doc(orderId).delete();
+  }
 }
