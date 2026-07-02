@@ -20,6 +20,7 @@ import '../features/admin/admin_assign_driver_screen.dart';
 import '../features/admin/manage_products_screen.dart';
 import '../features/supplier/supplier_dashboard.dart';
 import '../features/supplier/supplier_orders_screen.dart';
+import '../features/supplier/crop_suggestion_screen.dart';
 import '../features/driver/driver_dashboard.dart';
 import '../features/profile/profile_screen.dart';
 
@@ -169,6 +170,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/supplier/products',
         pageBuilder: (context, state) =>
             _buildSmoothPage(state, const ManageProductsScreen()),
+      ),
+      GoRoute(
+        path: '/supplier/suggestions',
+        pageBuilder: (context, state) =>
+            _buildSmoothPage(state, const CropSuggestionScreen()),
       ),
       GoRoute(
         path: '/admin',

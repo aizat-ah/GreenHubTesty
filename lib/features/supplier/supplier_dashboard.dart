@@ -172,6 +172,14 @@ class SupplierDashboard extends ConsumerWidget {
                     subtitle: 'Add, edit and manage your listings',
                     onTap: () => context.push('/supplier/products'),
                   ),
+                  const SizedBox(height: 12),
+
+                  _QuickActionTile(
+                    icon: Icons.insights_rounded,
+                    title: 'Planting Suggestions',
+                    subtitle: 'AI crop tips from market demand',
+                    onTap: () => context.push('/supplier/suggestions'),
+                  ),
                 ],
               ),
             ),
