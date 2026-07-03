@@ -546,17 +546,36 @@ class _StatusUpdateSheet extends ConsumerWidget {
               status: status,
               onTap: () async {
                 Navigator.pop(context);
-                await ref
-                    .read(orderServiceProvider)
-                    .updateStatus(order.id, status);
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        'Order updated to ${status.label} ${status.emoji}',
+                try {
+                  if (status == OrderStatus.cancelled) {
+                    // Cancelling restocks the order's items, so it must
+                    // go through the Cloud Function transaction rather
+                    // than a plain status field write — otherwise stock
+                    // decremented at payment/COD confirmation would never
+                    // be returned.
+                    await ref
+                        .read(orderServiceProvider)
+                        .cancelPlacedOrder(order.id);
+                  } else {
+                    await ref
+                        .read(orderServiceProvider)
+                        .updateStatus(order.id, status);
+                  }
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Order updated to ${status.label} ${status.emoji}',
+                        ),
                       ),
-                    ),
-                  );
+                    );
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(e.toString())),
+                    );
+                  }
                 }
               },
             ),

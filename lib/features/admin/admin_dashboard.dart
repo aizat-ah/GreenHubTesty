@@ -231,78 +231,22 @@ class AdminDashboard extends ConsumerWidget {
         Row(
           children: [
             Expanded(
-              child: InkWell(
+              child: _DriverNavCard(
+                label: 'Manage Drivers',
+                icon: Icons.delivery_dining_outlined,
+                iconColor: AppTheme.accent,
+                iconBgAlpha: 0.15,
                 onTap: () => context.push('/admin/drivers'),
-                borderRadius: BorderRadius.circular(20),
-                child: Ink(
-                  padding: const EdgeInsets.all(16),
-                  decoration: AppTheme.cardDecoration,
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: AppTheme.accent.withValues(alpha: 0.15),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.delivery_dining_outlined,
-                          color: AppTheme.accent,
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Text(
-                          'Manage Drivers',
-                          style: GoogleFonts.poppins(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                            color: AppTheme.textDark,
-                          ),
-                        ),
-                      ),
-                      const Icon(Icons.chevron_right, color: AppTheme.textMid),
-                    ],
-                  ),
-                ),
               ),
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: InkWell(
+              child: _DriverNavCard(
+                label: 'Assign Drivers',
+                icon: Icons.person_pin_outlined,
+                iconColor: AppTheme.info,
+                iconBgAlpha: 0.1,
                 onTap: () => context.push('/admin/assign-driver'),
-                borderRadius: BorderRadius.circular(20),
-                child: Ink(
-                  padding: const EdgeInsets.all(16),
-                  decoration: AppTheme.cardDecoration,
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: AppTheme.info.withValues(alpha: 0.1),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.person_pin_outlined,
-                          color: AppTheme.info,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          'Assign Drivers',
-                          style: GoogleFonts.poppins(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: AppTheme.textDark,
-                          ),
-                        ),
-                      ),
-                      const Icon(Icons.chevron_right, color: AppTheme.textMid),
-                    ],
-                  ),
-                ),
               ),
             ),
           ],
@@ -558,6 +502,81 @@ class _StatCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// Vertical nav card used for "Manage Drivers" / "Assign Drivers": icon on
+// top, centered label below (unlike the icon-beside-text row layout used
+// by "Manage Users"), with the tap-affordance chevron pinned to the
+// card's top-right corner instead of trailing the label. Giving the label
+// the full card width (rather than sharing it with the icon) is what lets
+// it wrap at word boundaries instead of mid-word.
+class _DriverNavCard extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final Color iconColor;
+  final double iconBgAlpha;
+  final VoidCallback onTap;
+
+  const _DriverNavCard({
+    required this.label,
+    required this.icon,
+    required this.iconColor,
+    required this.iconBgAlpha,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(20),
+      child: Ink(
+        padding: const EdgeInsets.all(16),
+        decoration: AppTheme.cardDecoration,
+        child: Stack(
+          children: [
+            const Positioned(
+              top: 0,
+              right: 0,
+              child: Icon(
+                Icons.chevron_right,
+                color: AppTheme.textMid,
+                size: 20,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 6),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: iconColor.withValues(alpha: iconBgAlpha),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(icon, color: iconColor),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    label,
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.textDark,
+                      height: 1.2,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

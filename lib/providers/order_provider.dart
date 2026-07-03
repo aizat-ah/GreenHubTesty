@@ -9,6 +9,11 @@
 //     PaymentService.payWithStripe, then marks it paid+confirmed on
 //     success. On failure/cancel, the pending order is deleted and the
 //     error is rethrown so the checkout screen can show it.
+//   - If paymentMethod is cashOnDelivery: creates the order, then
+//     immediately calls confirmCodOrder() to check/decrement stock and
+//     mark it confirmed (COD has no separate "payment succeeded" moment,
+//     so placement itself is that moment). Same cleanup-on-failure as
+//     Stripe if stock isn't available.
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
@@ -98,6 +103,13 @@ class PlaceOrderNotifier extends StateNotifier<AsyncValue<OrderModel?>> {
           status: OrderStatus.confirmed,
           isPaid: true,
         );
+      } else {
+        // COD has no separate "payment succeeded" step — order placement
+        // itself is the moment stock gets checked + decremented. Throws
+        // OrderActionFailure (e.g. insufficient stock) — caught below,
+        // where the pending order we just created gets cleaned up.
+        await _orderService.confirmCodOrder(placed.id);
+        placed = placed.copyWith(status: OrderStatus.confirmed);
       }
 
       // Only clear the cart once we know the order is actually settled
