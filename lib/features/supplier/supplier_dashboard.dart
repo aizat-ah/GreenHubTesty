@@ -1,8 +1,10 @@
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_theme.dart';
+import '../../dev/demo_data_seeder.dart';
 import '../../models/order_model.dart';
 import '../../providers/auth_provider.dart';
 import 'supplier_orders_screen.dart';
@@ -180,6 +182,39 @@ class SupplierDashboard extends ConsumerWidget {
                     subtitle: 'AI crop tips from market demand',
                     onTap: () => context.push('/supplier/suggestions'),
                   ),
+
+                  // ── DEV ONLY: demo data seeding ─────────────────────────
+                  // kDebugMode-gated so this section can never appear in a
+                  // release build. Still, delete this block + the import
+                  // above before your final submission/demo.
+                  if (kDebugMode) ...[
+                    const SizedBox(height: 24),
+                    Text(
+                      'DEV TOOLS',
+                      style: GoogleFonts.inter(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: AppTheme.textLight,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+
+                    _QuickActionTile(
+                      icon: Icons.add_chart_rounded,
+                      title: 'Add Demo Sales Batch',
+                      subtitle: 'Seed more mock orders for AI testing',
+                      onTap: () => DemoDataSeeder().seedFreshSalesBatch(context),
+                    ),
+                    const SizedBox(height: 12),
+
+                    _QuickActionTile(
+                      icon: Icons.delete_sweep_rounded,
+                      title: 'Clear Demo Sales Data',
+                      subtitle: 'Remove all seeded mock orders',
+                      onTap: () => DemoDataSeeder().deleteSeededDemoData(context),
+                    ),
+                  ],
                 ],
               ),
             ),

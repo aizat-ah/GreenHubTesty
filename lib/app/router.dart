@@ -18,9 +18,12 @@ import '../features/admin/admin_order_monitor.dart';
 import '../features/admin/admin_driver_management.dart';
 import '../features/admin/admin_assign_driver_screen.dart';
 import '../features/admin/manage_products_screen.dart';
+import '../features/admin/sales_report_screen.dart';
 import '../features/supplier/supplier_dashboard.dart';
 import '../features/supplier/supplier_orders_screen.dart';
 import '../features/supplier/crop_suggestion_screen.dart';
+import '../features/supplier/all_crop_stats_screen.dart';
+import '../features/supplier/planting_plan_screen.dart';
 import '../features/driver/driver_dashboard.dart';
 import '../features/profile/profile_screen.dart';
 
@@ -177,6 +180,16 @@ final routerProvider = Provider<GoRouter>((ref) {
             _buildSmoothPage(state, const CropSuggestionScreen()),
       ),
       GoRoute(
+        path: '/supplier/suggestions/all',
+        pageBuilder: (context, state) =>
+            _buildSmoothPage(state, const AllCropStatsScreen()),
+      ),
+      GoRoute(
+        path: '/supplier/suggestions/plan',
+        pageBuilder: (context, state) =>
+            _buildSmoothPage(state, const PlantingPlanScreen()),
+      ),
+      GoRoute(
         path: '/admin',
         pageBuilder: (context, state) =>
             _buildSmoothPage(state, const AdminDashboard()),
@@ -205,6 +218,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/admin/assign-driver',
         pageBuilder: (context, state) =>
             _buildSmoothPage(state, const AdminAssignDriverScreen()),
+      ),
+      GoRoute(
+        path: '/admin/reports',
+        pageBuilder: (context, state) =>
+            _buildSmoothPage(state, const SalesReportScreen()),
       ),
       // ── Driver ────────────────────────────────────────────────────────────
       GoRoute(

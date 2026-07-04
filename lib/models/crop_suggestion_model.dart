@@ -148,7 +148,14 @@ class CropSuggestion {
 
 /// The full result returned by the suggestion engine for one run.
 class CropSuggestionResult {
+  /// Top-N recommendations shown on the main suggestions screen.
   final List<CropSuggestion> suggestions;
+
+  /// Every crop the engine analysed, ranked, not just the top N — powers
+  /// the "All Crops" stats screen so suppliers can see what's NOT
+  /// recommended too.
+  final List<CropSuggestion> allSuggestions;
+
   final SuggestionSource source;
   final DateTime generatedAt;
 
@@ -160,6 +167,7 @@ class CropSuggestionResult {
 
   const CropSuggestionResult({
     required this.suggestions,
+    required this.allSuggestions,
     required this.source,
     required this.generatedAt,
     required this.windowDays,

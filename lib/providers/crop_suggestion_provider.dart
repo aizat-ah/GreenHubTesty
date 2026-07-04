@@ -6,16 +6,18 @@
 // - `cropSuggestionProvider` is a FutureProvider that runs the engine and
 //   hands the screen an AsyncValue<CropSuggestionResult>. Pull-to-refresh /
 //   the header refresh button just `ref.invalidate` it.
-// - `plannedCropsProvider` keeps the set of crops the supplier has tapped
-//   "Add to planting plan" on, so the UI can flip the button to a done
-//   state (session-local; persist to Firestore if you need it to survive
-//   app restarts).
+// - `plannedCropsProvider` streams the set of crops the current supplier
+//   has added to their planting plan, from Firestore
+//   (plannedCrops/{supplierUid}), so it survives app restarts and syncs
+//   across devices. Writes go through `plannedCropsControllerProvider`.
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 
 import '../models/crop_suggestion_model.dart';
 import '../services/crop_suggestion_service.dart';
+import '../services/planned_crops_service.dart';
+import 'auth_provider.dart';
 
 final cropSuggestionServiceProvider = Provider<CropSuggestionService>(
   (ref) => CropSuggestionService(),
@@ -34,24 +36,37 @@ final cropSuggestionProvider =
   return service.generateSuggestions(windowDays: window, topN: 4);
 });
 
-/// Crop names the supplier has added to their planting plan this session.
-class PlannedCropsNotifier extends StateNotifier<Set<String>> {
-  PlannedCropsNotifier() : super(const {});
+final plannedCropsServiceProvider = Provider<PlannedCropsService>(
+  (ref) => PlannedCropsService(),
+);
 
-  void toggle(String cropName) {
-    final next = Set<String>.from(state);
-    if (next.contains(cropName)) {
-      next.remove(cropName);
-    } else {
-      next.add(cropName);
-    }
-    state = next;
+/// Crop names the current supplier has added to their planting plan,
+/// streamed live from Firestore. Empty (not an error) while logged out.
+final plannedCropsProvider = StreamProvider<Set<String>>((ref) {
+  final userAsync = ref.watch(currentUserProvider);
+  return userAsync.when(
+    data: (user) {
+      if (user == null) return Stream.value(<String>{});
+      return ref.watch(plannedCropsServiceProvider).streamPlannedCrops(user.uid);
+    },
+    loading: () => Stream.value(<String>{}),
+    error: (_, _) => Stream.value(<String>{}),
+  );
+});
+
+/// Write-side actions for the planting plan — kept separate from
+/// `plannedCropsProvider` since that's a read-only Firestore stream.
+class PlannedCropsController {
+  PlannedCropsController(this._ref);
+  final Ref _ref;
+
+  Future<void> toggle(String cropName) async {
+    final user = await _ref.read(currentUserProvider.future);
+    if (user == null) return;
+    await _ref.read(plannedCropsServiceProvider).toggle(user.uid, cropName);
   }
-
-  bool isPlanned(String cropName) => state.contains(cropName);
 }
 
-final plannedCropsProvider =
-    StateNotifierProvider<PlannedCropsNotifier, Set<String>>(
-  (ref) => PlannedCropsNotifier(),
+final plannedCropsControllerProvider = Provider<PlannedCropsController>(
+  (ref) => PlannedCropsController(ref),
 );

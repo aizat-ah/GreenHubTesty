@@ -6,8 +6,12 @@ import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_theme.dart';
+import '../../models/invoice_model.dart';
 import '../../models/order_model.dart';
+import '../../providers/auth_provider.dart';
+import '../../providers/invoice_provider.dart';
 import '../../providers/order_provider.dart';
+import '../../services/invoice_pdf_service.dart';
 
 // Supplier all-orders stream provider
 final supplierOrdersProvider = StreamProvider<List<OrderModel>>((ref) {
@@ -440,6 +444,15 @@ class _AdminOrderCard extends ConsumerWidget {
                     color: AppTheme.primary,
                     onTap: () => _showStatusSheet(context, ref, order),
                   ),
+                if (order.status == OrderStatus.completed) ...[
+                  const SizedBox(width: 8),
+                  _ActionButton(
+                    icon: '🧾',
+                    label: 'Invoice',
+                    color: AppTheme.info,
+                    onTap: () => _showInvoiceSheet(context, order),
+                  ),
+                ],
               ],
             ),
           ),
@@ -494,6 +507,255 @@ class _AdminOrderCard extends ConsumerWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
       builder: (ctx) => _StatusUpdateSheet(order: order),
+    );
+  }
+
+  void _showInvoiceSheet(BuildContext context, OrderModel order) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (ctx) => _InvoiceSheet(order: order),
+    );
+  }
+}
+
+// ─── Invoice bottom sheet ──────────────────────────────────────────────────────
+
+class _InvoiceSheet extends ConsumerStatefulWidget {
+  final OrderModel order;
+
+  const _InvoiceSheet({required this.order});
+
+  @override
+  ConsumerState<_InvoiceSheet> createState() => _InvoiceSheetState();
+}
+
+class _InvoiceSheetState extends ConsumerState<_InvoiceSheet> {
+  final TextEditingController _noteController = TextEditingController();
+  bool _isWorking = false;
+  String? _error;
+
+  @override
+  void dispose() {
+    _noteController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _generate(InvoiceModel? existing) async {
+    final supplier = ref.read(currentUserProvider).value;
+    if (supplier == null) return;
+
+    setState(() {
+      _isWorking = true;
+      _error = null;
+    });
+
+    try {
+      final invoice = existing ??
+          await ref.read(invoiceServiceProvider).getOrCreateInvoice(
+                order: widget.order,
+                supplierId: supplier.uid,
+                note: _noteController.text.trim(),
+              );
+
+      await InvoicePdfService().shareInvoice(
+        invoice: invoice,
+        order: widget.order,
+        supplier: supplier,
+      );
+
+      if (existing == null) {
+        // Refresh so the sheet flips from "generate" to "view/download"
+        // mode if it's reopened without navigating away first.
+        ref.invalidate(invoiceForOrderProvider(widget.order.id));
+      }
+
+      if (mounted) Navigator.pop(context);
+    } catch (e) {
+      if (mounted) setState(() => _error = e.toString());
+    } finally {
+      if (mounted) setState(() => _isWorking = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final invoiceAsync = ref.watch(invoiceForOrderProvider(widget.order.id));
+
+    return Padding(
+      padding: EdgeInsets.fromLTRB(
+        24,
+        24,
+        24,
+        MediaQuery.of(context).viewInsets.bottom + 32,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Center(
+            child: Container(
+              width: 40,
+              height: 4,
+              margin: const EdgeInsets.only(bottom: 20),
+              decoration: BoxDecoration(
+                color: AppTheme.divider,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
+          Text(
+            'Invoice — Order #${widget.order.id.substring(0, 8).toUpperCase()}',
+            style: GoogleFonts.poppins(
+              fontSize: 17,
+              fontWeight: FontWeight.w800,
+              color: AppTheme.textDark,
+            ),
+          ),
+          const SizedBox(height: 16),
+          invoiceAsync.when(
+            data: (existing) => _buildContent(existing),
+            loading: () => const Padding(
+              padding: EdgeInsets.symmetric(vertical: 24),
+              child: Center(child: CircularProgressIndicator()),
+            ),
+            error: (e, _) => Text(
+              'Could not check invoice status: $e',
+              style: GoogleFonts.inter(fontSize: 13, color: AppTheme.error),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildContent(InvoiceModel? existing) {
+    if (_error != null) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppTheme.error.withValues(alpha: 0.06),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: AppTheme.error.withValues(alpha: 0.2)),
+            ),
+            child: Text(
+              _error!,
+              style: GoogleFonts.inter(fontSize: 13, color: AppTheme.error),
+            ),
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: _isWorking ? null : () => _generate(existing),
+              icon: const Icon(Icons.refresh_rounded),
+              label: const Text('Retry'),
+            ),
+          ),
+        ],
+      );
+    }
+
+    if (existing != null) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'An invoice was already generated for this order.',
+            style: GoogleFonts.inter(fontSize: 13, color: AppTheme.textMid),
+          ),
+          const SizedBox(height: 12),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: AppTheme.surfaceDim,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Invoice ID: ${existing.id}',
+                  style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textMid),
+                ),
+                Text(
+                  'Issued: ${DateFormat('d MMM yyyy, hh:mm a').format(existing.dateIssued)}',
+                  style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textMid),
+                ),
+                if (existing.note.isNotEmpty) ...[
+                  const SizedBox(height: 6),
+                  Text(
+                    '📝 ${existing.note}',
+                    style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textDark),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: _isWorking ? null : () => _generate(existing),
+              icon: _isWorking
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                    )
+                  : const Icon(Icons.picture_as_pdf_outlined),
+              label: Text(_isWorking ? 'Preparing PDF...' : 'Download / Share Invoice'),
+            ),
+          ),
+        ],
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Add a note to this invoice (optional)',
+          style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.textDark),
+        ),
+        const SizedBox(height: 8),
+        TextField(
+          controller: _noteController,
+          maxLines: 3,
+          decoration: InputDecoration(
+            hintText: 'e.g. Thank you for your order!',
+            filled: true,
+            fillColor: AppTheme.surfaceDim,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: BorderSide.none,
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton.icon(
+            onPressed: _isWorking ? null : () => _generate(null),
+            icon: _isWorking
+                ? const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                  )
+                : const Icon(Icons.receipt_long_rounded),
+            label: Text(_isWorking ? 'Generating...' : 'Generate Invoice'),
+          ),
+        ),
+      ],
     );
   }
 }

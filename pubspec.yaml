@@ -37,6 +37,11 @@ dependencies:
   cloud_functions: ^6.3.3
   tflite_flutter: ^0.12.1
 
+  # Reports
+  pdf: ^3.11.3
+  printing: ^5.13.4
+  fl_chart: ^0.69.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

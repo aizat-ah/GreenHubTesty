@@ -5,7 +5,6 @@ service cloud.firestore {
     function getRole() { return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role; }
     function hasSupplierAccess() { return isLoggedIn() && (getRole() == 'supplier' || getRole() == 'admin'); }
     function isAdminUser() { return isLoggedIn() && getRole() == 'admin'; }
-
     match /users/{userId} {
       allow read: if request.auth.uid == userId || hasSupplierAccess();
       allow create: if request.auth.uid == userId || isAdminUser();
@@ -18,14 +17,49 @@ service cloud.firestore {
     }
     match /orders/{orderId} {
       allow create: if isLoggedIn();
-      allow read: if isLoggedIn() && (resource.data.customerId == request.auth.uid || hasSupplierAccess() || resource.data.driverId == request.auth.uid);
-      allow update: if hasSupplierAccess() || (isLoggedIn() && resource.data.driverId == request.auth.uid);
-      allow delete: if hasSupplierAccess();
+      allow read: if isLoggedIn() && (
+        resource.data.customerId == request.auth.uid ||
+        hasSupplierAccess() ||
+        resource.data.driverId == request.auth.uid
+      );
+      // Suppliers/admins and the assigned driver can update freely.
+      // A buyer may ALSO update their own order, but only to confirm a
+      // Stripe payment on a still-pending order — nothing else. This is
+      // what lets `markPaid()` in order_service.dart succeed without
+      // opening up broader edit access to buyers.
+      allow update: if hasSupplierAccess()
+        || (isLoggedIn() && resource.data.driverId == request.auth.uid)
+        || (
+          isLoggedIn()
+          && resource.data.customerId == request.auth.uid
+          && resource.data.status == 'pending'
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isPaid', 'status'])
+          && request.resource.data.status == 'confirmed'
+          && request.resource.data.isPaid == true
+        );
+      // Suppliers/admins can delete any order. A buyer may ALSO delete
+      // their own order, but only while it's still pending — this is
+      // what lets the Stripe cleanup path (deleteOrder() on payment
+      // failure/cancellation) succeed without giving buyers general
+      // delete rights over confirmed/completed orders.
+      allow delete: if hasSupplierAccess()
+        || (
+          isLoggedIn()
+          && resource.data.customerId == request.auth.uid
+          && resource.data.status == 'pending'
+        );
+    }
+    match /invoices/{invoiceId} {
+      allow read, create: if hasSupplierAccess();
+      allow update, delete: if isAdminUser();
     }
     match /drivers/{driverId} {
       allow read: if isLoggedIn();
       allow create, update: if request.auth.uid == driverId || isAdminUser();
       allow delete: if isAdminUser();
+    }
+    match /plannedCrops/{supplierUid} {
+      allow read, write: if request.auth.uid == supplierUid && hasSupplierAccess();
     }
   }
 }

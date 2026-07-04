@@ -51,6 +51,12 @@ class CropSuggestionScreen extends ConsumerWidget {
                   orElse: () => DateTime.now(),
                 ),
                 onRefresh: () => ref.invalidate(cropSuggestionProvider),
+                plannedCount:
+                    ref.watch(plannedCropsProvider).maybeWhen(
+                          data: (s) => s.length,
+                          orElse: () => 0,
+                        ),
+                onViewPlan: () => context.push('/supplier/suggestions/plan'),
               ),
             ),
 
@@ -84,11 +90,15 @@ class _Header extends StatelessWidget {
   final SuggestionSource source;
   final DateTime generatedAt;
   final VoidCallback onRefresh;
+  final int plannedCount;
+  final VoidCallback onViewPlan;
 
   const _Header({
     required this.source,
     required this.generatedAt,
     required this.onRefresh,
+    required this.plannedCount,
+    required this.onViewPlan,
   });
 
   @override
@@ -120,6 +130,8 @@ class _Header extends StatelessWidget {
                     onTap: () => context.pop(),
                   ),
                   const Spacer(),
+                  _PlanButton(count: plannedCount, onTap: onViewPlan),
+                  const SizedBox(width: 10),
                   _CircleIconButton(
                     icon: Icons.refresh_rounded,
                     onTap: onRefresh,
@@ -297,9 +309,17 @@ class _Body extends StatelessWidget {
             ),
           ),
 
-          // Fallback / disclaimer banner
+          // View all crops button
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 6, 20, 0),
+            child: _ViewAllCropsButton(
+              count: result.allSuggestions.length,
+            ),
+          ),
+
+          // Fallback / disclaimer banner
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
             child: _InfoBanner(isFallback: result.isFallback),
           ),
         ],
@@ -430,8 +450,9 @@ class _CropCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isPlanned = ref.watch(plannedCropsProvider).contains(
-          suggestion.cropName,
+    final isPlanned = ref.watch(plannedCropsProvider).maybeWhen(
+          data: (s) => s.contains(suggestion.cropName),
+          orElse: () => false,
         );
 
     return Container(
@@ -572,7 +593,7 @@ class _CropCard extends ConsumerWidget {
             child: GestureDetector(
               onTap: () {
                 ref
-                    .read(plannedCropsProvider.notifier)
+                    .read(plannedCropsControllerProvider)
                     .toggle(suggestion.cropName);
               },
               child: AnimatedContainer(
@@ -609,6 +630,46 @@ class _CropCard extends ConsumerWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// ─── View all crops button ──────────────────────────────────────────────────────
+
+class _ViewAllCropsButton extends StatelessWidget {
+  final int count;
+  const _ViewAllCropsButton({required this.count});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => context.push('/supplier/suggestions/all'),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: AppTheme.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppTheme.primary.withValues(alpha: 0.25)),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.bar_chart_rounded, size: 19, color: AppTheme.primary),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                'View all $count crops & stats',
+                style: GoogleFonts.poppins(
+                  fontSize: 13.5,
+                  fontWeight: FontWeight.w600,
+                  color: AppTheme.primary,
+                ),
+              ),
+            ),
+            Icon(Icons.arrow_forward_ios_rounded,
+                size: 14, color: AppTheme.primary.withValues(alpha: 0.6)),
+          ],
+        ),
       ),
     );
   }
@@ -851,6 +912,42 @@ class _CircleIconButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(13),
         ),
         child: Icon(icon, color: Colors.white, size: 18),
+      ),
+    );
+  }
+}
+
+class _PlanButton extends StatelessWidget {
+  final int count;
+  final VoidCallback onTap;
+  const _PlanButton({required this.count, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 40,
+        padding: const EdgeInsets.symmetric(horizontal: 14),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.12),
+          borderRadius: BorderRadius.circular(13),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.checklist_rounded, color: Colors.white, size: 17),
+            const SizedBox(width: 7),
+            Text(
+              count > 0 ? 'My Plan ($count)' : 'My Plan',
+              style: GoogleFonts.poppins(
+                fontSize: 12.5,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -69,6 +69,7 @@ class CropSuggestionService {
     if (demand.isEmpty) {
       return CropSuggestionResult(
         suggestions: const [],
+        allSuggestions: const [],
         source: SuggestionSource.heuristicFallback,
         generatedAt: now,
         windowDays: windowDays,
@@ -112,6 +113,7 @@ class CropSuggestionService {
 
     return CropSuggestionResult(
       suggestions: top,
+      allSuggestions: ranked,
       source: source,
       generatedAt: now,
       windowDays: windowDays,
